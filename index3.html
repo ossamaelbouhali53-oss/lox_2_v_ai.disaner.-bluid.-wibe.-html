@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI Web Designer - Lox_2_v</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- مكتبة EmailJS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<style>
+/* ... (نفس التصميم السابق بدون تغيير) ... */
+:root{
+  --primary:#6c5ce7; --primary-light:#a29bfe; --primary-text:#ffffff;
+  --bg:#f4f4f8; --bg2:#ffffff; --text:#1a1a2e; --text-soft:#666;
+  --border:#e0e0e8; --user-msg:linear-gradient(135deg,#6c5ce7,#a29bfe);
+  --ai-msg:#ffffff; --shadow:0 4px 20px rgba(0,0,0,.06);
+  --success:#10b981; --danger:#ef4444; --warning:#f59e0b;
+}
+[data-theme="dark"]{
+  --bg:#0f0f17; --bg2:#1a1a28; --text:#f0f0f5; --text-soft:#a0a0b0;
+  --border:#2a2a3e; --ai-msg:#25253a; --shadow:0 4px 20px rgba(0,0,0,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Tajawal','Segoe UI','Tahoma',sans-serif}
+html, body{height:100%; overflow:hidden;}
+body{background:var(--bg);color:var(--text);transition:.3s;}
+#app{display:flex;flex-direction:column;height:100%;width:100%;position:relative;overflow:hidden;}
+header{background:var(--bg2);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:var(--shadow);z-index:10;flex-shrink:0;}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(108,92,231,.35);transition:.3s;}
+.logo-icon svg{width:20px;height:20px;stroke:var(--primary-text);fill:none;stroke-width:2;transition:stroke .3s}
+header h2{font-size:15px;color:var(--text);font-weight:700}
+header h2 span{color:var(--primary)}
+header .actions{display:flex;gap:8px;align-items:center}
+.icon-btn, .auth-btn {height: 38px; border-radius: 11px; border: 1px solid var(--border);background: var(--bg); color: var(--text); cursor: pointer;display: flex; align-items: center; justify-content: center;gap: 8px; transition: .25s; font-weight: 700; font-size: 0.9rem;padding: 0 15px;}
+.icon-btn { width: 38px; padding: 0; }
+.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn:hover, .auth-btn:hover {background: var(--primary); color: var(--primary-text); border-color: var(--primary); transform: translateY(-2px);}
+.icon-btn:hover svg { stroke: var(--primary-text); }
+.color-picker-wrap{position:relative;width:38px;height:38px;border-radius:11px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.25s;overflow:hidden;}
+.color-picker-wrap:hover{transform:translateY(-2px);border-color:var(--primary);background:var(--primary);color:var(--primary-text)}
+.color-picker-wrap:hover svg{stroke:var(--primary-text)}
+.color-picker-wrap svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;pointer-events:none;transition:stroke .25s}
+.color-picker{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none}
+#chat{flex:1 1 auto;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth;-webkit-overflow-scrolling: touch;}
+#chat::-webkit-scrollbar{width:6px}
+#chat::-webkit-scrollbar-track{background:transparent}
+#chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+#chat::-webkit-scrollbar-thumb:hover{background:var(--primary)}
+.msg{max-width:85%;padding:14px 18px;border-radius:16px;line-height:1.8;font-size:14.5px;word-wrap:break-word;animation:fadeIn .35s ease;box-shadow:var(--shadow);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.msg.user{align-self:flex-start;background:var(--user-msg);color:var(--primary-text);border-bottom-right-radius:5px;box-shadow:0 6px 20px rgba(108,92,231,.3);}
+.msg.ai{align-self:flex-end;background:var(--ai-msg);border:1px solid var(--border);border-bottom-left-radius:5px;position:relative;}
+.msg strong{font-weight:800;color:var(--primary)}
+.msg.user strong{color:var(--primary-text);text-shadow:0 1px 2px rgba(0,0,0,.15)}
+.msg pre{background:#0d0d15;color:#7fffb0;padding:44px 14px 14px 14px;border-radius:11px;overflow-x:auto;direction:ltr;text-align:left;margin-top:10px;font-size:12.5px;position:relative;font-family:'Consolas','Monaco',monospace;border:1px solid #1f1f2e;line-height:1.6;}
+.code-actions{position:absolute;top:8px;left:8px;display:flex;gap:6px;z-index:2;}
+.copy-btn{background:var(--primary);color:var(--primary-text);border:none;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px;font-weight:600;transition:.2s;}
+.copy-btn:hover{background:var(--primary-light);transform:scale(1.05)}
+.copy-btn svg{width:12px;height:12px;stroke:var(--primary-text);fill:none;stroke-width:2.2}
+.copy-btn.preview-btn{background:#27ae60}
+.copy-btn.preview-btn:hover{background:#2ecc71}
+.msg .text-content{white-space:pre-wrap}
+.typing-caret{display:inline-block;width:8px;height:16px;background:var(--primary);margin-right:2px;vertical-align:middle;border-radius:1px;animation:blink .7s infinite;}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+.thinking{display:flex;gap:10px;align-items:center;padding:12px 18px;background:var(--ai-msg);border:1px solid var(--border);align-self:flex-end;border-radius:16px;border-bottom-left-radius:5px;box-shadow:var(--shadow);font-size:13.5px;color:var(--text-soft);font-weight:600;}
+.thinking svg{width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:spin 1.8s linear infinite;}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.input-area{flex-shrink:0;padding:12px 16px 16px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end;box-shadow: 0 -4px 15px rgba(0,0,0,0.03);z-index:20;}
+.input-box{flex:1;position:relative}
+.input-area textarea{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);resize:none;max-height:120px;font-size:14px;outline:none;font-family:inherit;transition:.25s;line-height:1.5;}
+.input-area textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,92,231,.15);}
+.send-btn{padding:0 18px;height:46px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:var(--primary-text);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;transition:.25s;box-shadow:0 4px 14px rgba(108,92,231,.35);}
+.send-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 6px 18px rgba(108,92,231,.5)}
+.send-btn:active{transform:scale(.96)}
+.welcome{text-align:center;padding:25px 15px;color:var(--text-soft);display:flex;flex-direction:column;align-items:center;gap:8px;}
+.welcome-icon{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;margin-bottom:6px;box-shadow:0 8px 25px rgba(108,92,231,.35);animation:pulse 2.5s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.welcome-icon svg{width:30px;height:30px;stroke:var(--primary-text);fill:none;stroke-width:1.8}
+.welcome h3{color:var(--text);font-size:17px;font-weight:800}
+.welcome p{font-size:13px;line-height:1.8;max-width:380px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(60px);background:#27ae60;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;box-shadow:0 6px 20px rgba(39,174,96,.4);opacity:0;transition:.35s;pointer-events:none;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.save-indicator{position:fixed;bottom:15px;left:15px;background:var(--bg2);color:var(--text-soft);padding:5px 10px;border-radius:15px;font-size:10px;border:1px solid var(--border);opacity:0;transition:.3s;display:flex;align-items:center;gap:4px;z-index:999;}
+.save-indicator.show{opacity:1}
+.save-indicator svg{width:10px;height:10px;stroke:#27ae60;fill:none;stroke-width:2.5}
+.preview-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:1000;padding:15px;}
+.preview-modal.show{display:flex;align-items:center;justify-content:center}
+.preview-container{width:100%;max-width:1100px;height:88vh;background:var(--bg2);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.5);}
+.preview-header{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.preview-title{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--text);font-size:14px;}
+.preview-title-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;}
+.preview-title-icon svg{width:16px;height:16px;stroke:var(--primary-text);fill:none;stroke-width:2}
+.preview-actions{display:flex;gap:6px;align-items:center}
+.preview-toggle{display:flex;background:var(--bg);border-radius:8px;padding:2px;border:1px solid var(--border);}
+.preview-toggle button{padding:6px 12px;border:none;background:transparent;color:var(--text-soft);cursor:pointer;border-radius:6px;font-size:12px;font-weight:600;transition:.2s;display:flex;align-items:center;gap:4px;}
+.preview-toggle button.active{background:var(--primary);color:var(--primary-text);}
+.preview-toggle button svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2}
+.preview-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;}
+.preview-close:hover{background:#e74c3c;color:#fff;border-color:#e74c3c}
+.preview-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5}
+.preview-body{flex:1;position:relative;overflow:hidden;background:var(--bg);}
+.preview-body iframe{width:100%;height:100%;border:none;background:#fff;display:block;}
+.preview-body .code-view{width:100%;height:100%;overflow:auto;padding:16px;background:#0d0d15;color:#7fffb0;font-family:'Consolas','Monaco',monospace;font-size:12.5px;line-height:1.6;direction:ltr;text-align:left;white-space:pre;display:none;}
+.preview-body.show-code iframe{display:none}
+.preview-body.show-code .code-view{display:block}
+.auth-modal { display: none; position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
+.auth-modal.active { display: flex; }
+.auth-modal-content { background: var(--bg2); border-radius: 16px; width: 100%; max-width: 420px; max-height: 95vh; overflow-y: auto; padding: 30px 25px; position: relative; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); animation: slideUp 0.3s ease-out; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.close-auth { position: absolute; top: 15px; left: 15px; font-size: 1.2rem; cursor: pointer; color: var(--text-soft); background: var(--bg); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
+.close-auth:hover { color: var(--danger); border-color: var(--danger); }
+.auth-form-group { margin-bottom: 18px; position: relative; }
+.auth-form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; color: var(--text); }
+.input-wrapper { position: relative; display: flex; align-items: center; }
+.input-wrapper i.icon-left { position: absolute; right: 15px; color: var(--text-soft); font-size: 1.1rem; }
+.auth-form-group input { width: 100%; padding: 12px 40px 12px 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; }
+.auth-form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2); }
+.toggle-password { position: absolute; left: 15px; cursor: pointer; color: var(--text-soft); font-size: 1rem; }
+.toggle-password:hover { color: var(--primary); }
+.strength-meter { height: 4px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.strength-bar { height: 100%; width: 0; transition: width 0.3s, background-color 0.3s; }
+.strength-text { font-size: 0.75rem; margin-top: 5px; display: block; text-align: left; }
+.auth-btn-primary { background-color: var(--primary); color: var(--primary-text); border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 10px; transition: 0.2s; }
+.auth-btn-primary:hover { background-color: var(--primary-light); transform: translateY(-2px); }
+.auth-btn-success { background-color: var(--success); color: #fff; }
+.auth-btn-success:hover { background-color: #059669; }
+.auth-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 10px; transition: 0.2s; }
+.auth-btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+.captcha-box { display: flex; gap: 10px; align-items: center; }
+.captcha-question { background: var(--bg); border: 1px dashed var(--primary); color: var(--primary); padding: 12px 16px; border-radius: 12px; font-weight: 900; font-size: 1.1rem; white-space: nowrap; }
+.otp-input { text-align: center !important; font-size: 1.8rem !important; letter-spacing: 12px !important; font-weight: 900 !important; padding: 15px !important; direction: ltr !important; }
+.info-message { background: rgba(108, 92, 231, 0.1); border: 1px solid rgba(108, 92, 231, 0.3); color: var(--text); padding: 12px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5; }
+.success-check { text-align: center; color: var(--success); font-size: 3rem; margin-bottom: 15px; animation: pop 0.5s ease-out; }
+@keyframes pop { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.auth-toggle-text { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-soft); }
+.auth-toggle-text a { color: var(--primary); cursor: pointer; font-weight: bold; text-decoration: none; }
+.auth-toggle-text a:hover { text-decoration: underline; }
+.forgot-pass-link { display: block; text-align: left; font-size: 0.85rem; color: var(--primary); cursor: pointer; margin-top: -10px; margin-bottom: 15px; }
+.forgot-pass-link:hover { text-decoration: underline; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h2>AI <span>Designer</span></h2>
+    </div>
+    <div class="actions">
+      <button class="auth-btn" id="authBtn" onclick="openAuthModal()">
+        <i class="fas fa-user-circle"></i> <span id="authBtnText">دخول</span>
+      </button>
+
+      <div class="color-picker-wrap" title="تغيير اللون">
+        <svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.7 0 3-1.3 3-3 0-.8-.3-1.5-.8-2-.5-.5-.7-1.2-.7-2 0-1.7 1.3-3 3-3h2c2.8 0 5-2.2 5-5 0-4.4-5.1-8-11.5-8z"/></svg>
+        <input type="color" class="color-picker" id="colorPicker" value="#6c5ce7">
+      </div>
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="الوضع">
+        <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <button class="icon-btn" onclick="clearChat()" title="مسح المحادثة">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="chat"></div>
+
+  <div class="input-area">
+    <div class="input-box">
+      <textarea id="userInput" rows="1" placeholder="اكتب طلبك... مثال: صمم لي صفحة هبوط عصرية"></textarea>
+    </div>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="إرسال">إرسال</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ تم النسخ</div>
+
+<div class="save-indicator" id="saveIndicator">
+  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span>تم الحفظ</span>
+</div>
+
+<div class="preview-modal" id="previewModal">
+  <div class="preview-container">
+    <div class="preview-header">
+      <div class="preview-title">
+        <div class="preview-title-icon">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <span>معاينة الكود</span>
+      </div>
+      <div class="preview-actions">
+        <div class="preview-toggle">
+          <button class="active" onclick="switchPreview('view', this)">
+            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>معاينة</span>
+          </button>
+          <button onclick="switchPreview('code', this)">
+            <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span>الكود</span>
+          </button>
+        </div>
+        <button class="preview-close" onclick="closePreview()">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="preview-body" id="previewBody">
+      <iframe id="previewFrame" sandbox="allow-scripts allow-modals allow-forms"></iframe>
+      <div class="code-view" id="codeView"></div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================
+     نافذة تسجيل الدخول (Auth Modal)
+     ========================================= -->
+<div class="auth-modal" id="authModal">
+  <div class="auth-modal-content">
+    <span class="close-auth" onclick="closeAuthModal()">&times;</span>
+    
+    <!-- 1. تسجيل الدخول -->
+    <div id="loginSection">
+      <h2 style="text-align: center; margin-bottom: 25px; color: var(--primary);">
+        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+      </h2>
+      
+      <div class="auth-form-group">
+        <label>البريد الإلكتروني</label>
+        <div class="input-wrapper">
+          <i class="fas fa-envelope icon-left"></i>
+          <input type="text" id="loginEmail" placeholder="أدخل بريدك الإلكتروني">
+        </div>
+      </div>
+
+      <div class="auth-form-group">
+        <label>كلمة المرور</label>
+        <div class="input-wrapper">
+          <i class="fas fa-lock icon-left"></i>
+          <input type="password" id="loginPass" placeholder="أدخل كلمة المرور">
+          <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPass', this)"></i>
+        </div>
+      </div>
+
+      <a class="forgot-pass-link" onclick="toggleAuthMode('forgot')">نسيت كلمة المرور؟</a>
+
+      <button class="auth-btn-primary" onclick="handleLogin()">
+        <i class="fas fa-arrow-left"></i> دخول
+      </button>
+      
+      <div class="auth-toggle-text">
+        ليس لديك حساب؟ <a onclick="toggleAuthMode('register')">إنشاء حساب جديد</a>
+      </div>
+    </div>
+
+    <!-- 2. إنشاء حساب -->
+    <div id="registerSection" class="hidden">
+      <h2 style="text-align: center; margin-bottom: 25px; color: var(--primary);">
+        <i class="fas fa-user-plus"></i> حساب جديد
+      </h2>
+      
+      <div id="registerStep1">
+        <div class="auth-form-group">
+          <label>البريد الإلكتروني (Gmail)</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope icon-left"></i>
+            <input type="email" id="regEmail" placeholder="example@gmail.com">
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <label>كلمة المرور</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock icon-left"></i>
+            <input type="password" id="regPass" placeholder="أدخل كلمة مرور قوية" oninput="checkPasswordStrength('regPass', 'strengthBar', 'strengthText')">
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('regPass', this)"></i>
+          </div>
+          <div class="strength-meter"><div class="strength-bar" id="strengthBar"></div></div>
+          <span class="strength-text" id="strengthText"></span>
+        </div>
+
+        <div class="auth-form-group">
+          <label>تأكيد كلمة المرور</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock icon-left"></i>
+            <input type="password" id="regPassConfirm" placeholder="أعد كتابة كلمة المرور">
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('regPassConfirm', this)"></i>
+          </div>
+        </div>
+
+        <div class="auth-form-group">
+          <label><i class="fas fa-robot"></i> التحقق من أنك لست روبوت</label>
+          <div class="captcha-box">
+            <span class="captcha-question" id="captchaQuestion">3 + 5 = ?</span>
+            <input type="number" id="captchaAnswer" placeholder="الجواب" inputmode="numeric" style="text-align: center;">
+          </div>
+        </div>
+
+        <button class="auth-btn-primary" id="sendCodeBtn" onclick="sendVerificationCode()">
+          <i class="fas fa-paper-plane"></i> إرسال كود التحقق
+        </button>
+      </div>
+
+      <div id="registerStep2" class="hidden">
+        <div class="success-check"><i class="fas fa-envelope-open-text"></i></div>
+        <div class="info-message" style="background: rgba(245, 158, 11, 0.1); border-color: var(--warning);">
+          <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+          <strong>لم يصلك الكود؟</strong> اذهب إلى تطبيق Gmail وابحث في مجلد <strong>"الرسائل غير المرغوب فيها" (Spam)</strong>.
+        </div>
+        <div class="info-message">
+          <i class="fas fa-info-circle"></i>
+          تم إرسال كود التحقق إلى بريدك: <strong id="sentEmailLabel"></strong><br>
+          الكود صالح لمدة <strong>5 دقائق</strong>.
+        </div>
+
+        <div class="auth-form-group">
+          <label style="text-align: center; display: block; margin-bottom: 10px;">أدخل كود التحقق (OTP)</label>
+          <input type="text" id="otpInput" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+        </div>
+
+        <button class="auth-btn-primary auth-btn-success" onclick="verifyCode()">
+           <i class="fas fa-check-circle"></i> تحقق وإنشاء الحساب
+        </button>
+        
+        <button class="auth-btn-outline" id="resendBtn" onclick="resendCode()" disabled>
+          <i class="fas fa-redo"></i> إعادة الإرسال (<span id="resendTimer">30</span>ث)
+        </button>
+        
+        <button class="auth-btn-outline" onclick="cancelRegistration()" style="border-color: transparent;">
+          <i class="fas fa-arrow-right"></i> رجوع للخلف
+        </button>
+      </div>
+
+      <div class="auth-toggle-text">
+        لديك حساب بالفعل؟ <a onclick="toggleAuthMode('login')">تسجيل الدخول</a>
+      </div>
+    </div>
+
+    <!-- 3. نسيت كلمة المرور -->
+    <div id="forgotSection" class="hidden">
+      <h2 style="text-align: center; margin-bottom: 25px; color: var(--warning);">
+        <i class="fas fa-key"></i> استعادة الحساب
+      </h2>
+      
+      <div id="forgotStep1">
+        <div class="info-message">
+          أدخل البريد الإلكتروني المسجل مسبقاً، وسنرسل لك كود تحقق لتغيير كلمة المرور.
+        </div>
+        <div class="auth-form-group">
+          <label>البريد الإلكتروني</label>
+          <div class="input-wrapper">
+            <i class="fas fa-envelope icon-left"></i>
+            <input type="email" id="forgotEmail" placeholder="example@gmail.com">
+          </div>
+        </div>
+        <button class="auth-btn-primary" id="sendResetBtn" onclick="sendForgotCode()">
+          <i class="fas fa-paper-plane"></i> إرسال كود الاستعادة
+        </button>
+      </div>
+
+      <div id="forgotStep2" class="hidden">
+        <div class="success-check"><i class="fas fa-envelope-open-text"></i></div>
+        <div class="info-message" style="background: rgba(245, 158, 11, 0.1); border-color: var(--warning);">
+          <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+          <strong>لم يصلك الكود؟</strong> تحقق من مجلد <strong>"الرسائل غير المرغوب فيها" (Spam)</strong> في Gmail.
+        </div>
+        <div class="info-message">
+          <i class="fas fa-info-circle"></i>
+          تم إرسال الكود إلى: <strong id="forgotSentLabel"></strong>
+        </div>
+        <div class="auth-form-group">
+          <label style="text-align: center; display: block; margin-bottom: 10px;">أدخل كود التحقق (OTP)</label>
+          <input type="text" id="forgotOtpInput" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric">
+        </div>
+        <button class="auth-btn-primary auth-btn-success" onclick="verifyForgotCode()">
+          <i class="fas fa-check-circle"></i> تحقق من الكود
+        </button>
+        <button class="auth-btn-outline" id="forgotResendBtn" onclick="resendForgotCode()" disabled>
+          <i class="fas fa-redo"></i> إعادة الإرسال (<span id="forgotResendTimer">30</span>ث)
+        </button>
+      </div>
+
+      <div id="forgotStep3" class="hidden">
+        <div class="success-check"><i class="fas fa-unlock-alt"></i></div>
+        <div class="info-message" style="color: var(--success); border-color: var(--success);">
+          <i class="fas fa-check-double"></i> تم التحقق بنجاح! يرجى إدخال كلمة المرور الجديدة.
+        </div>
+        <div class="auth-form-group">
+          <label>كلمة المرور الجديدة</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock icon-left"></i>
+            <input type="password" id="newPass" placeholder="أدخل كلمة مرور جديدة" oninput="checkPasswordStrength('newPass', 'newStrengthBar', 'newStrengthText')">
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('newPass', this)"></i>
+          </div>
+          <div class="strength-meter"><div class="strength-bar" id="newStrengthBar"></div></div>
+          <span class="strength-text" id="newStrengthText"></span>
+        </div>
+        <div class="auth-form-group">
+          <label>تأكيد كلمة المرور الجديدة</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock icon-left"></i>
+            <input type="password" id="newPassConfirm" placeholder="أعد كتابة كلمة المرور">
+            <i class="fas fa-eye toggle-password" onclick="togglePassword('newPassConfirm', this)"></i>
+          </div>
+        </div>
+        <div class="auth-form-group">
+          <label><i class="fas fa-robot"></i> التحقق من أنك لست روبوت</label>
+          <div class="captcha-box">
+            <span class="captcha-question" id="forgotCaptchaQuestion">3 + 5 = ?</span>
+            <input type="number" id="forgotCaptchaAnswer" placeholder="الجواب" inputmode="numeric" style="text-align: center;">
+          </div>
+        </div>
+        <button class="auth-btn-primary auth-btn-success" onclick="updatePassword()">
+          <i class="fas fa-save"></i> حفظ كلمة المرور الجديدة
+        </button>
+      </div>
+
+      <div class="auth-toggle-text">
+        تذكرت كلمة المرور؟ <a onclick="toggleAuthMode('login')">تسجيل الدخول</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ═══════════════════════════════════════════════════════════
+  // 🔧 إعدادات EmailJS
+  // ═══════════════════════════════════════════════════════════
+  const EMAILJS_CONFIG = {
+    PUBLIC_KEY:  "NQZ3ODR9v_SJQBIFW",       
+    SERVICE_ID:  "service_4a4r63m",       
+    TEMPLATE_ID: "template_pz4r7ta"      
+  };
+
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+  }
+
+  const STORAGE_USERS = 'lox_users';
+  const STORAGE_CURRENT_USER = 'lox_currentUser';
+
+  const getUsers = () => JSON.parse(localStorage.getItem(STORAGE_USERS)) || [];
+  const saveUsers = (users) => localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
+  let currentUser = JSON.parse(localStorage.getItem(STORAGE_CURRENT_USER)) || null;
+
+  function updateAuthUI() {
+    const authBtn = document.getElementById('authBtn');
+    const authBtnText = document.getElementById('authBtnText');
+    
+    if (currentUser) {
+      authBtnText.textContent = "خروج";
+      authBtn.setAttribute('onclick', 'logout()');
+      authBtn.style.background = 'var(--danger)';
+      authBtn.style.color = '#fff';
+      authBtn.style.borderColor = 'var(--danger)';
+    } else {
+      authBtnText.textContent = "دخول";
+      authBtn.setAttribute('onclick', 'openAuthModal()');
+      authBtn.style.background = 'var(--bg)';
+      authBtn.style.color = 'var(--text)';
+      authBtn.style.borderColor = 'var(--border)';
+    }
+  }
+
+  function openAuthModal() { 
+    if(currentUser) return;
+    toggleAuthMode('login');
+    document.getElementById('authModal').classList.add('active'); 
+  }
+  
+  function closeAuthModal() { 
+    document.getElementById('authModal').classList.remove('active'); 
+  }
+
+  function toggleAuthMode(mode) {
+    document.getElementById('loginSection').classList.add('hidden');
+    document.getElementById('registerSection').classList.add('hidden');
+    document.getElementById('forgotSection').classList.add('hidden');
+
+    if (mode === 'register') {
+      document.getElementById('registerSection').classList.remove('hidden');
+      resetRegisterForm();
+      generateMathCaptcha('captchaQuestion', 'captchaAnswer');
+    } else if (mode === 'forgot') {
+      document.getElementById('forgotSection').classList.remove('hidden');
+      resetForgotForm();
+    } else {
+      document.getElementById('loginSection').classList.remove('hidden');
+    }
+  }
+
+  function togglePassword(inputId, icon) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  }
+
+  function checkPasswordStrength(inputId, barId, textId) {
+    const pass = document.getElementById(inputId).value;
+    const bar = document.getElementById(barId);
+    const text = document.getElementById(textId);
+    
+    let strength = 0;
+    if (pass.length >= 6) strength += 1;
+    if (pass.length >= 10) strength += 1;
+    if (/[A-Z]/.test(pass)) strength += 1;
+    if (/[0-9]/.test(pass)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(pass)) strength += 1;
+
+    const percent = (strength / 5) * 100;
+    bar.style.width = percent + '%';
+    
+    if (pass.length === 0) {
+      text.textContent = '';
+      bar.style.width = '0%';
+    } else if (strength <= 2) {
+      bar.style.backgroundColor = 'var(--danger)';
+      text.textContent = 'ضعيفة جداً';
+      text.style.color = 'var(--danger)';
+    } else if (strength === 3) {
+      bar.style.backgroundColor = 'var(--warning)';
+      text.textContent = 'متوسطة';
+      text.style.color = 'var(--warning)';
+    } else {
+      bar.style.backgroundColor = 'var(--success)';
+      text.textContent = 'قوية جداً';
+      text.style.color = 'var(--success)';
+    }
+  }
+
+  let captchaAnswers = {};
+  function generateMathCaptcha(questionId, inputId) {
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    captchaAnswers[inputId] = a + b;
+    document.getElementById(questionId).textContent = `${a} + ${b} = ?`;
+    document.getElementById(inputId).value = '';
+  }
+
+  // ==========================================
+  // قسم التسجيل
+  // ==========================================
+  let pendingRegistration = null, verificationCode = null, codeExpiry = null;
+
+  async function sendEmailWithCode(email, code) {
+    return await emailjs.send(
+      EMAILJS_CONFIG.SERVICE_ID,
+      EMAILJS_CONFIG.TEMPLATE_ID,
+      { to_email: email, verification_code: code, app_name: "lox_2_v" }
+    );
+  }
+
+  async function sendVerificationCode() {
+    const email = document.getElementById('regEmail').value.trim();
+    const pass = document.getElementById('regPass').value;
+    const confirmPass = document.getElementById('regPassConfirm').value;
+    const captchaIn = parseInt(document.getElementById('captchaAnswer').value);
+
+    if (!email || !pass) return alert("يرجى ملء جميع الحقول");
+    if (pass !== confirmPass) return alert("كلمتا المرور غير متطابقتين!");
+    if (pass.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+    if (isNaN(captchaIn) || captchaIn !== captchaAnswers['captchaAnswer']) {
+      alert("إجابة التحقق غير صحيحة");
+      return generateMathCaptcha('captchaQuestion', 'captchaAnswer');
+    }
+
+    if (getUsers().find(u => u.email === email)) {
+      return alert("هذا البريد الإلكتروني مسجل بالفعل!");
+    }
+
+    verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    codeExpiry = Date.now() + 5 * 60 * 1000;
+    pendingRegistration = { email, pass };
+
+    const btn = document.getElementById('sendCodeBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+    try {
+      await sendEmailWithCode(email, verificationCode);
+      alert(`✅ تم إرسال الكود إلى ${email}\n\n⚠️ إذا لم تجده، تحقق من مجلد "الرسائل غير المرغوب فيها" (Spam) في Gmail.`);
+    } catch (err) {
+      alert(`❌ خطأ: ${err.text || err.message}\n\n⚠️ تم نسخ الكود في الحافظة (Clipboard) لكي تتمكن من إكمال التسجيل.`);
+      // نسخ الكود كخطة بديلة في حال فشل الإرسال
+      navigator.clipboard.writeText(verificationCode).catch(()=>{});
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال كود التحقق';
+    }
+
+    document.getElementById('sentEmailLabel').textContent = email;
+    document.getElementById('registerStep1').classList.add('hidden');
+    document.getElementById('registerStep2').classList.remove('hidden');
+    document.getElementById('otpInput').focus();
+    startResendCooldown(30, 'resendBtn', 'resendTimer');
+  }
+
+  function verifyCode() {
+    const input = document.getElementById('otpInput').value.trim();
+    if (!pendingRegistration) return alert("انتهت الجلسة");
+    if (Date.now() > codeExpiry) return alert("انتهت صلاحية الكود");
+    if (input !== verificationCode) return alert("❌ الكود غير صحيح");
+
+    const users = getUsers();
+    users.push(pendingRegistration);
+    saveUsers(users);
+
+    currentUser = { email: pendingRegistration.email };
+    localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(currentUser));
+
+    alert("🎉 تم إنشاء الحساب بنجاح!");
+    resetRegisterForm();
+    closeAuthModal();
+    updateAuthUI();
+  }
+
+  async function resendCode() {
+    if (!pendingRegistration) return;
+    verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    codeExpiry = Date.now() + 5 * 60 * 1000;
+    try {
+      await sendEmailWithCode(pendingRegistration.email, verificationCode);
+      alert("✅ تم إعادة إرسال الكود");
+    } catch (err) { 
+      alert("❌ خطأ: " + (err.text || err.message)); 
+      navigator.clipboard.writeText(verificationCode).catch(()=>{});
+    }
+    startResendCooldown(30, 'resendBtn', 'resendTimer');
+  }
+
+  function startResendCooldown(seconds, btnId, timerId) {
+    const btn = document.getElementById(btnId);
+    const timerSpan = document.getElementById(timerId);
+    let remaining = seconds;
+    btn.disabled = true;
+    timerSpan.textContent = remaining;
+
+    const interval = setInterval(() => {
+      remaining--;
+      timerSpan.textContent = remaining;
+      if (remaining <= 0) { clearInterval(interval); btn.disabled = false; }
+    }, 1000);
+  }
+
+  function cancelRegistration() {
+    pendingRegistration = null; verificationCode = null; codeExpiry = null;
+    resetRegisterForm();
+  }
+
+  function resetRegisterForm() {
+    document.getElementById('registerStep1').classList.remove('hidden');
+    document.getElementById('registerStep2').classList.add('hidden');
+    document.getElementById('regEmail').value = '';
+    document.getElementById('regPass').value = '';
+    document.getElementById('regPassConfirm').value = '';
+    document.getElementById('captchaAnswer').value = '';
+    document.getElementById('otpInput').value = '';
+    document.getElementById('strengthBar').style.width = '0%';
+    document.getElementById('strengthText').textContent = '';
+    generateMathCaptcha('captchaQuestion', 'captchaAnswer');
+  }
+
+  // ==========================================
+  // قسم الدخول
+  // ==========================================
+  function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPass').value;
+
+    if (!email || !pass) return alert("يرجى إدخال البريد وكلمة المرور");
+
+    const user = getUsers().find(u => u.email === email && u.pass === pass);
+    if (user) {
+      currentUser = { email: user.email };
+      localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(currentUser));
+      alert("🎉 تم تسجيل الدخول بنجاح!");
+      closeAuthModal();
+      updateAuthUI();
+    } else {
+      alert("❌ البريد أو كلمة المرور غير صحيحة!");
+    }
+  }
+
+  function logout() {
+    currentUser = null;
+    localStorage.removeItem(STORAGE_CURRENT_USER);
+    updateAuthUI();
+    alert("👋 تم تسجيل الخروج.");
+  }
+
+  // ==========================================
+  // قسم نسيت كلمة المرور
+  // ==========================================
+  let forgotEmailValue = null, forgotCode = null, forgotExpiry = null;
+
+  function resetForgotForm() {
+    document.getElementById('forgotStep1').classList.remove('hidden');
+    document.getElementById('forgotStep2').classList.add('hidden');
+    document.getElementById('forgotStep3').classList.add('hidden');
+    document.getElementById('forgotEmail').value = '';
+    document.getElementById('forgotOtpInput').value = '';
+    document.getElementById('newPass').value = '';
+    document.getElementById('newPassConfirm').value = '';
+    document.getElementById('forgotCaptchaAnswer').value = '';
+    document.getElementById('newStrengthBar').style.width = '0%';
+    document.getElementById('newStrengthText').textContent = '';
+    generateMathCaptcha('forgotCaptchaQuestion', 'forgotCaptchaAnswer');
+  }
+
+  async function sendForgotCode() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    if (!email) return alert("يرجى إدخال البريد الإلكتروني");
+
+    if (!getUsers().find(u => u.email === email)) {
+      return alert("❌ هذا البريد غير مسجل لدينا!");
+    }
+
+    forgotCode = Math.floor(100000 + Math.random() * 900000).toString();
+    forgotExpiry = Date.now() + 5 * 60 * 1000;
+    forgotEmailValue = email;
+
+    const btn = document.getElementById('sendResetBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+    try {
+      await sendEmailWithCode(email, forgotCode);
+      alert(`✅ تم إرسال الكود إلى ${email}\n\n⚠️ تحقق من مجلد "الرسائل غير المرغوب فيها" (Spam) إذا لم تجده.`);
+    } catch (err) {
+      alert(`❌ خطأ: ${err.text || err.message}\n\n⚠️ تم نسخ الكود في الحافظة للاستخدام.`);
+      navigator.clipboard.writeText(forgotCode).catch(()=>{});
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال كود الاستعادة';
+    }
+
+    document.getElementById('forgotSentLabel').textContent = email;
+    document.getElementById('forgotStep1').classList.add('hidden');
+    document.getElementById('forgotStep2').classList.remove('hidden');
+    document.getElementById('forgotOtpInput').focus();
+    startResendCooldown(30, 'forgotResendBtn', 'forgotResendTimer');
+  }
+
+  function verifyForgotCode() {
+    const input = document.getElementById('forgotOtpInput').value.trim();
+    if (!forgotEmailValue) return alert("انتهت الجلسة");
+    if (Date.now() > forgotExpiry) return alert("انتهت صلاحية الكود");
+    if (input !== forgotCode) return alert("❌ الكود غير صحيح");
+
+    document.getElementById('forgotStep2').classList.add('hidden');
+    document.getElementById('forgotStep3').classList.remove('hidden');
+    generateMathCaptcha('forgotCaptchaQuestion', 'forgotCaptchaAnswer');
+  }
+
+  async function resendForgotCode() {
+    if (!forgotEmailValue) return;
+    forgotCode = Math.floor(100000 + Math.random() * 900000).toString();
+    forgotExpiry = Date.now() + 5 * 60 * 1000;
+    try {
+      await sendEmailWithCode(forgotEmailValue, forgotCode);
+      alert("✅ تم إعادة إرسال الكود");
+    } catch (err) { 
+      alert("❌ خطأ: " + (err.text || err.message)); 
+      navigator.clipboard.writeText(forgotCode).catch(()=>{});
+    }
+    startResendCooldown(30, 'forgotResendBtn', 'forgotResendTimer');
+  }
+
+  function updatePassword() {
+    const newPass = document.getElementById('newPass').value;
+    const confirmPass = document.getElementById('newPassConfirm').value;
+    const captchaIn = parseInt(document.getElementById('forgotCaptchaAnswer').value);
+
+    if (!newPass || !confirmPass) return alert("يرجى ملء الحقول");
+    if (newPass !== confirmPass) return alert("كلمتا المرور غير متطابقتين!");
+    if (newPass.length < 6) return alert("كلمة المرور قصيرة جداً");
+    if (isNaN(captchaIn) || captchaIn !== captchaAnswers['forgotCaptchaAnswer']) {
+      alert("إجابة التحقق غير صحيحة");
+      return generateMathCaptcha('forgotCaptchaQuestion', 'forgotCaptchaAnswer');
+    }
+
+    let users = getUsers();
+    const userIndex = users.findIndex(u => u.email === forgotEmailValue);
+    if (userIndex === -1) return alert("حدث خطأ، المستخدم غير موجود.");
+
+    users[userIndex].pass = newPass;
+    saveUsers(users);
+
+    alert("🎉 تم تغيير كلمة المرور بنجاح!");
+    forgotEmailValue = null; forgotCode = null; forgotExpiry = null;
+    resetForgotForm();
+    toggleAuthMode('login');
+  }
+
+  // ==========================================
+  // كود الذكاء الاصطناعي والتصميم
+  // ==========================================
+  const API_KEY = "AQ.Ab8RN6IgI3C0xgWkl2v5blhoavrc0xXg7ukFJX3wf5A7AeNWvw";
+  const MODEL   = "gemini-flash-latest";
+  const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent";
+
+  const STORAGE = {
+    CHAT:  'ai_chat_v4',
+    THEME: 'ai_theme_v4',
+    COLOR: 'ai_color_v4',
+    INPUT: 'ai_input_v4'
+  };
+
+  function saveAll(){
+    try{
+      localStorage.setItem(STORAGE.CHAT, document.getElementById('chat').innerHTML);
+      localStorage.setItem(STORAGE.THEME, document.documentElement.getAttribute('data-theme') || 'light');
+      localStorage.setItem(STORAGE.COLOR, getComputedStyle(document.documentElement).getPropertyValue('--primary').trim());
+      localStorage.setItem(STORAGE.INPUT, document.getElementById('userInput').value);
+      showSaveIndicator();
+    }catch(e){}
+  }
+
+  function loadAll(){
+    const theme = localStorage.getItem(STORAGE.THEME) || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    updateThemeIcon(theme);
+
+    const color = localStorage.getItem(STORAGE.COLOR);
+    if(color && color.startsWith('#')){
+      document.getElementById('colorPicker').value = color;
+      applyPrimaryColor(color);
+    }
+
+    const chat = localStorage.getItem(STORAGE.CHAT);
+    if(chat && chat.trim()){
+      document.getElementById('chat').innerHTML = chat;
+    } else {
+      showWelcome();
+    }
+
+    const input = localStorage.getItem(STORAGE.INPUT);
+    if(input){
+      const ta = document.getElementById('userInput');
+      ta.value = input;
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+    }
+    
+    updateAuthUI();
+  }
+
+  let saveTimer;
+  function showSaveIndicator(){
+    const el = document.getElementById('saveIndicator');
+    el.classList.add('show');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){ el.classList.remove('show'); }, 1200);
+  }
+
+  function hexToRgb(hex){
+    const n = parseInt(hex.replace('#',''), 16);
+    return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 };
+  }
+  function getBrightness(hex){
+    const c = hexToRgb(hex);
+    return (c.r*299 + c.g*587 + c.b*114) / 1000;
+  }
+  function isLightColor(hex){ return getBrightness(hex) > 170; }
+  function adjustColor(hex, amount){
+    const c = hexToRgb(hex);
+    const clamp = function(v){ return Math.max(0, Math.min(255, v)); };
+    const r = clamp(c.r+amount), g = clamp(c.g+amount), b = clamp(c.b+amount);
+    return '#' + ((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+  }
+  function applyPrimaryColor(hex){
+    const root = document.documentElement;
+    root.style.setProperty('--primary', hex);
+    root.style.setProperty('--primary-light', adjustColor(hex, 30));
+    const textColor = isLightColor(hex) ? '#1a1a2e' : '#ffffff';
+    root.style.setProperty('--primary-text', textColor);
+    root.style.setProperty('--user-msg', 'linear-gradient(135deg,' + hex + ',' + adjustColor(hex, 30) + ')');
+  }
+
+  function toggleTheme(){
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    updateThemeIcon(next);
+    saveAll();
+  }
+  function updateThemeIcon(t){
+    const icon = document.getElementById('themeIcon');
+    if(t === 'dark'){
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    } else {
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+    }
+  }
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 1800);
+  }
+
+  function formatText(text){
+    let html = escapeHtml(text);
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return html;
+  }
+  function escapeHtml(t){
+    return t.replace(/[&<>"']/g, function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  }
+
+  function encodeCode(code){
+    try{ return btoa(unescape(encodeURIComponent(code))); }
+    catch(e){ return ''; }
+  }
+  function decodeCode(pre){
+    const encoded = pre.getAttribute('data-code');
+    if(encoded){
+      try{ return decodeURIComponent(escape(atob(encoded))); }
+      catch(e){}
+    }
+    const codeEl = pre.querySelector('code');
+    return codeEl ? codeEl.textContent : '';
+  }
+
+  function addUserMessage(text){
+    const w = document.querySelector('.welcome');
+    if(w) w.remove();
+
+    const div = document.createElement('div');
+    div.className = 'msg user';
+    div.innerHTML = '<div class="text-content">' + formatText(text) + '</div>';
+    document.getElementById('chat').appendChild(div);
+    scrollBottom();
+    saveAll();
+  }
+
+  function addAIMessageWithTyping(text, callback){
+    const div = document.createElement('div');
+    div.className = 'msg ai';
+    document.getElementById('chat').appendChild(div);
+
+    const hasCode = /```/.test(text);
+    if(hasCode){
+      animateTextThenShowCode(div, text, callback);
+    } else {
+      typeText(div, text, callback);
+    }
+  }
+
+  function typeText(container, text, callback){
+    const textDiv = document.createElement('div');
+    textDiv.className = 'text-content';
+    container.appendChild(textDiv);
+
+    const caret = document.createElement('span');
+    caret.className = 'typing-caret';
+    textDiv.appendChild(caret);
+
+    const tokens = tokenizeText(text);
+    let i = 0;
+    const speed = 12;
+
+    function typeNext(){
+      if(i >= tokens.length){
+        caret.remove();
+        saveAll();
+        if(callback) callback();
+        return;
+      }
+      const token = tokens[i];
+      if(token.type === 'bold'){
+        const strong = document.createElement('strong');
+        strong.textContent = token.content;
+        textDiv.insertBefore(strong, caret);
+      } else {
+        const txt = document.createTextNode(token.content);
+        textDiv.insertBefore(txt, caret);
+      }
+      i++;
+      scrollBottom();
+      setTimeout(typeNext, speed);
+    }
+    typeNext();
+  }
+
+  function tokenizeText(text){
+    const tokens = [];
+    const regex = /\*\*(.+?)\*\*/g;
+    let lastIndex = 0, match;
+    while((match = regex.exec(text)) !== null){
+      const before = text.slice(lastIndex, match.index);
+      for(let j = 0; j < before.length; j++){ tokens.push({ type: 'char', content: before[j] }); }
+      tokens.push({ type: 'bold', content: match[1] });
+      lastIndex = regex.lastIndex;
+    }
+    const rest = text.slice(lastIndex);
+    for(let j = 0; j < rest.length; j++){ tokens.push({ type: 'char', content: rest[j] }); }
+    return tokens;
+  }
+
+  function animateTextThenShowCode(container, text, callback){
+    const parts = [];
+    const regex = /```(\w+)?\n([\s\S]*?)```/g;
+    let lastIndex = 0, match;
+
+    while((match = regex.exec(text)) !== null){
+      const before = text.slice(lastIndex, match.index).trim();
+      if(before) parts.push({ type: 'text', content: before });
+      parts.push({
+        type: 'code',
+        lang: (match[1] || '').toLowerCase(),
+        content: match[2].trim()
+      });
+      lastIndex = regex.lastIndex;
+    }
+    const after = text.slice(lastIndex).trim();
+    if(after) parts.push({ type: 'text', content: after });
+
+    let idx = 0;
+    function nextPart(){
+      if(idx >= parts.length){
+        saveAll();
+        if(callback) callback();
+        return;
+      }
+      const part = parts[idx];
+      idx++;
+
+      if(part.type === 'text'){
+        const textDiv = document.createElement('div');
+        textDiv.className = 'text-content';
+        container.appendChild(textDiv);
+
+        const caret = document.createElement('span');
+        caret.className = 'typing-caret';
+        textDiv.appendChild(caret);
+
+        const tokens = tokenizeText(part.content);
+        let i = 0;
+        function typeChar(){
+          if(i >= tokens.length){
+            caret.remove();
+            setTimeout(nextPart, 200);
+            return;
+          }
+          const token = tokens[i];
+          if(token.type === 'bold'){
+            const strong = document.createElement('strong');
+            strong.textContent = token.content;
+            textDiv.insertBefore(strong, caret);
+          } else {
+            const txt = document.createTextNode(token.content);
+            textDiv.insertBefore(txt, caret);
+          }
+          i++;
+          scrollBottom();
+          setTimeout(typeChar, 10);
+        }
+        typeChar();
+      } else if(part.type === 'code'){
+        const isHtml = part.lang === 'html' || /<!DOCTYPE|<html/i.test(part.content);
+        const encodedCode = encodeCode(part.content);
+
+        const pre = document.createElement('pre');
+        pre.setAttribute('data-code', encodedCode);
+        pre.innerHTML =
+          '<div class="code-actions">' +
+            '<button class="copy-btn" onclick="copyCode(this)">' +
+              '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>' +
+              'نسخ' +
+            '</button>' +
+            (isHtml ? '<button class="copy-btn preview-btn" onclick="openPreviewFromButton(this)">' +
+              '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+              'عرض' +
+            '</button>' : '') +
+          '</div>' +
+          '<code>' + escapeHtml(part.content) + '</code>';
+        container.appendChild(pre);
+        scrollBottom();
+        setTimeout(nextPart, 400);
+      }
+    }
+    nextPart();
+  }
+
+  function copyCode(btn){
+    const pre = btn.closest('pre');
+    const code = decodeCode(pre);
+    navigator.clipboard.writeText(code).then(function(){
+      showToast('✅ تم نسخ الكود');
+    }).catch(function(){
+      showToast('⚠️ فشل النسخ');
+    });
+  }
+
+  function scrollBottom(){
+    const c = document.getElementById('chat');
+    c.scrollTop = c.scrollHeight;
+  }
+
+  function clearChat(){
+    if(!confirm('مسح كل المحادثات؟')) return;
+    document.getElementById('chat').innerHTML = '';
+    localStorage.removeItem(STORAGE.CHAT);
+    showWelcome();
+    showToast('🗑️ تم مسح المحادثة');
+  }
+
+    function showWelcome(){
+    const welcome = document.createElement('div');
+    welcome.className = 'welcome';
+    welcome.innerHTML =
+      '<div class="welcome-icon">' +
+        '<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>' +
+      '</div>' +
+      '<h3>مرحباً بك 👋</h3>' +
+      '<p>أنا <strong>ذكاء اصطناعي مصمم من قبل Lox_2_v</strong><br>متخصص في تصميم المواقع وأعطيك الكود كاملاً في ملف HTML واحد</p>' +
+      '<p>أقدم خدمة <strong>مجانية تماماً 100%</strong></p>' +
+      '<p style="font-size:12px;opacity:.7;margin-top:6px">جرّب: صمم لي صفحة تسجيل دخول عصرية</p>';
+    document.getElementById('chat').appendChild(welcome);
+  }
+
+  function openPreviewFromButton(btn){
+    const pre = btn.closest('pre');
+    const code = decodeCode(pre);
+    openPreview(code);
+  }
+
+  function openPreview(code){
+    const modal = document.getElementById('previewModal');
+    const iframe = document.getElementById('previewFrame');
+    const codeView = document.getElementById('codeView');
+
+    iframe.srcdoc = code;
+    codeView.textContent = code;
+
+    document.getElementById('previewBody').classList.remove('show-code');
+    const toggleBtns = document.querySelectorAll('.preview-toggle button');
+    if(toggleBtns[0]) toggleBtns[0].classList.add('active');
+    if(toggleBtns[1]) toggleBtns[1].classList.remove('active');
+
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePreview(){
+    document.getElementById('previewModal').classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  function switchPreview(mode, btn){
+    const body = document.getElementById('previewBody');
+    const btns = document.querySelectorAll('.preview-toggle button');
+    btns.forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    if(mode === 'code'){
+      body.classList.add('show-code');
+    } else {
+      body.classList.remove('show-code');
+    }
+  }
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closePreview();
+  });
+
+  async function sendMessage(){
+    if(!currentUser) {
+      showToast('⚠️ يرجى تسجيل الدخول أولاً');
+      openAuthModal();
+      return;
+    }
+
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if(!text) return;
+    input.value = '';
+    input.style.height = 'auto';
+    localStorage.removeItem(STORAGE.INPUT);
+
+    addUserMessage(text);
+
+    const thinking = document.createElement('div');
+    thinking.className = 'thinking';
+    thinking.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>جاري التفكير والتصميم...</span>';
+    thinking.id = 'thinkingIndicator';
+    document.getElementById('chat').appendChild(thinking);
+    scrollBottom();
+
+    const reply = await callAI(text);
+
+    const th = document.getElementById('thinkingIndicator');
+    if(th) th.remove();
+
+    addAIMessageWithTyping(reply);
+  }
+
+  async function callAI(userText){
+    const lower = userText.toLowerCase();
+    if(lower.includes('من انت') || lower.includes('من أنت') || lower.includes('who are you') || lower.includes('من تكون')){
+      return "أنا **ذكاء اصطناعي مصمم من قبل Lox_2_v** 🤖\n\nأنا متخصص في تصميم المواقع وأعطيك الكود كاملاً في ملف HTML واحد (HTML + CSS + JS).\n\nأنا أقدم خدمة **مجانية تماماً 100%** ✨\n\nللتواصل مع المطور: **@Lox_2_v** على تليكرام";
+    }
+
+    if(!API_KEY || API_KEY.length < 20){
+      return mockAI(userText);
+    }
+
+    try{
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-goog-api-key': API_KEY
+        },
+        body: JSON.stringify({
+          contents: [{
+            role: "user",
+            parts: [{
+              text: "أنت ذكاء اصطناعي مصمم من قبل Lox_2_v، متخصص في تصميم المواقع.\n" +
+  "قواعدك الأساسية:\n" +
+  "1. عندما يطلب المستخدم موقعاً أو صفحة أو واجهة، أعطه كود كامل في ملف HTML واحد يحتوي HTML+CSS+JS معاً.\n" +
+  "2. ضع الكود داخل ```html ... ``` فقط.\n" +
+  "3. استخدم **النص** لتمييز المعلومات المهمة بخط عريض.\n" +
+  "4. عندما يسألك \"من أنت\" قل: \"أنا ذكاء اصطناعي مصمم من قبل Lox_2_v\".\n" +
+  "5. أنت تقدم خدمة مجانية 100% ولا تطلب أي دفع.\n" +
+  "6. تصميماتك عصرية، متجاوبة مع الجوال، وتستخدم ألواناً جميلة.\n" +
+  "7. الكود يجب أن يكون جاهزاً للاستخدام مباشرة.\n" +
+  "8. تحدث بالعربية دائماً.\n\n" +
+  "طلب المستخدم: " + userText
+            }]
+          }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
+        })
+      });
+
+      const data = await res.json();
+      if(data.error){
+        const errMsg = (data.error.message || '').toLowerCase();
+        if(errMsg.includes('high demand') || errMsg.includes('overloaded') || errMsg.includes('capacity')) {
+          return '⚠️ **عذراً، خوادم الذكاء الاصطناعي تواجه ضغطاً عالياً حالياً.**\nهذا الضغط مؤقت، يرجى المحاولة بعد قليل أو الاستفادة من التصميم التجريبي الجاهز أدناه 👇\n\n' + mockAI(userText);
+        }
+        return '⚠️ **خطأ من Gemini:** ' + (data.error.message || 'غير معروف') + '\n\n' + mockAI(userText);
+      }
+      
+      if(data.candidates && data.candidates[0] && data.candidates[0].content){
+        return data.candidates[0].content.parts[0].text;
+      }
+      return '⚠️ **لم يتم استلام رد من Gemini.**\n\n' + mockAI(userText);
+    }catch(e){
+      return '⚠️ **عذراً، خوادم الذكاء الاصطناعي تواجه ضغطاً عالياً حالياً.**\nتحقق من الاتصال بالإنترنت أو حاول مجدداً بعد قليل.\n\n' + mockAI(userText);
+    }
+  }
+
+  function mockAI(text){
+    return 'إليك تصميم جاهز في ملف HTML واحد 👇\n\n' +
+'```html\n' +
+'<!DOCTYPE html>\n' +
+'<html lang="ar" dir="rtl">\n' +
+'<head>\n' +
+'<meta charset="UTF-8">\n' +
+'<title>صفحة عصرية</title>\n' +
+'<style>\n' +
+'  *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}\n' +
+'  body{display:flex;align-items:center;justify-content:center;\n' +
+'       min-height:100vh;background:linear-gradient(135deg,#6c5ce7,#a29bfe)}\n' +
+'  .card{background:#fff;padding:30px;border-radius:20px;text-align:center}\n' +
+'  h1{color:#6c5ce7;margin-bottom:12px}\n' +
+'  button{background:#6c5ce7;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer}\n' +
+'</style>\n' +
+'</head>\n' +
+'<body>\n' +
+'  <div class="card">\n' +
+'    <h1>مرحباً بك 👋</h1>\n' +
+'    <button onclick="alert(\'تم!\')">اضغط هنا</button>\n' +
+'  </div>\n' +
+'</body>\n' +
+'</html>\n' +
+'```';
+  }
+
+  document.getElementById('colorPicker').addEventListener('input', function(e){
+    applyPrimaryColor(e.target.value);
+    saveAll();
+  });
+
+  document.getElementById('userInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  document.getElementById('userInput').addEventListener('input', function(){
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    localStorage.setItem(STORAGE.INPUT, this.value);
+  });
+
+  window.addEventListener('beforeunload', saveAll);
+  window.addEventListener('load', loadAll);
+
+</script>
+</body>
+</html>

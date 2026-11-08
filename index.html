@@ -2,1323 +2,843 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AI Web Designer - Lox_2_v</title>
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-  
-  <!-- مكتبة EmailJS -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevMind — مساعد ذكي شامل</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- مكتبة EmailJS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <style>
-/* ... (نفس التصميم السابق بدون تغيير) ... */
-:root{
-  --primary:#6c5ce7; --primary-light:#a29bfe; --primary-text:#ffffff;
-  --bg:#f4f4f8; --bg2:#ffffff; --text:#1a1a2e; --text-soft:#666;
-  --border:#e0e0e8; --user-msg:linear-gradient(135deg,#6c5ce7,#a29bfe);
-  --ai-msg:#ffffff; --shadow:0 4px 20px rgba(0,0,0,.06);
-  --success:#10b981; --danger:#ef4444; --warning:#f59e0b;
-}
-[data-theme="dark"]{
-  --bg:#0f0f17; --bg2:#1a1a28; --text:#f0f0f5; --text-soft:#a0a0b0;
-  --border:#2a2a3e; --ai-msg:#25253a; --shadow:0 4px 20px rgba(0,0,0,.4);
-}
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Tajawal','Segoe UI','Tahoma',sans-serif}
-html, body{height:100%; overflow:hidden;}
-body{background:var(--bg);color:var(--text);transition:.3s;}
-#app{display:flex;flex-direction:column;height:100%;width:100%;position:relative;overflow:hidden;}
-header{background:var(--bg2);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);box-shadow:var(--shadow);z-index:10;flex-shrink:0;}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-icon{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(108,92,231,.35);transition:.3s;}
-.logo-icon svg{width:20px;height:20px;stroke:var(--primary-text);fill:none;stroke-width:2;transition:stroke .3s}
-header h2{font-size:15px;color:var(--text);font-weight:700}
-header h2 span{color:var(--primary)}
-header .actions{display:flex;gap:8px;align-items:center}
-.icon-btn, .auth-btn {height: 38px; border-radius: 11px; border: 1px solid var(--border);background: var(--bg); color: var(--text); cursor: pointer;display: flex; align-items: center; justify-content: center;gap: 8px; transition: .25s; font-weight: 700; font-size: 0.9rem;padding: 0 15px;}
-.icon-btn { width: 38px; padding: 0; }
-.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.icon-btn:hover, .auth-btn:hover {background: var(--primary); color: var(--primary-text); border-color: var(--primary); transform: translateY(-2px);}
-.icon-btn:hover svg { stroke: var(--primary-text); }
-.color-picker-wrap{position:relative;width:38px;height:38px;border-radius:11px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.25s;overflow:hidden;}
-.color-picker-wrap:hover{transform:translateY(-2px);border-color:var(--primary);background:var(--primary);color:var(--primary-text)}
-.color-picker-wrap:hover svg{stroke:var(--primary-text)}
-.color-picker-wrap svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;pointer-events:none;transition:stroke .25s}
-.color-picker{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none}
-#chat{flex:1 1 auto;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth;-webkit-overflow-scrolling: touch;}
-#chat::-webkit-scrollbar{width:6px}
-#chat::-webkit-scrollbar-track{background:transparent}
-#chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-#chat::-webkit-scrollbar-thumb:hover{background:var(--primary)}
-.msg{max-width:85%;padding:14px 18px;border-radius:16px;line-height:1.8;font-size:14.5px;word-wrap:break-word;animation:fadeIn .35s ease;box-shadow:var(--shadow);}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.msg.user{align-self:flex-start;background:var(--user-msg);color:var(--primary-text);border-bottom-right-radius:5px;box-shadow:0 6px 20px rgba(108,92,231,.3);}
-.msg.ai{align-self:flex-end;background:var(--ai-msg);border:1px solid var(--border);border-bottom-left-radius:5px;position:relative;}
-.msg strong{font-weight:800;color:var(--primary)}
-.msg.user strong{color:var(--primary-text);text-shadow:0 1px 2px rgba(0,0,0,.15)}
-.msg pre{background:#0d0d15;color:#7fffb0;padding:44px 14px 14px 14px;border-radius:11px;overflow-x:auto;direction:ltr;text-align:left;margin-top:10px;font-size:12.5px;position:relative;font-family:'Consolas','Monaco',monospace;border:1px solid #1f1f2e;line-height:1.6;}
-.code-actions{position:absolute;top:8px;left:8px;display:flex;gap:6px;z-index:2;}
-.copy-btn{background:var(--primary);color:var(--primary-text);border:none;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:5px;font-weight:600;transition:.2s;}
-.copy-btn:hover{background:var(--primary-light);transform:scale(1.05)}
-.copy-btn svg{width:12px;height:12px;stroke:var(--primary-text);fill:none;stroke-width:2.2}
-.copy-btn.preview-btn{background:#27ae60}
-.copy-btn.preview-btn:hover{background:#2ecc71}
-.msg .text-content{white-space:pre-wrap}
-.typing-caret{display:inline-block;width:8px;height:16px;background:var(--primary);margin-right:2px;vertical-align:middle;border-radius:1px;animation:blink .7s infinite;}
-@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
-.thinking{display:flex;gap:10px;align-items:center;padding:12px 18px;background:var(--ai-msg);border:1px solid var(--border);align-self:flex-end;border-radius:16px;border-bottom-left-radius:5px;box-shadow:var(--shadow);font-size:13.5px;color:var(--text-soft);font-weight:600;}
-.thinking svg{width:20px;height:20px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:spin 1.8s linear infinite;}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.input-area{flex-shrink:0;padding:12px 16px 16px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end;box-shadow: 0 -4px 15px rgba(0,0,0,0.03);z-index:20;}
-.input-box{flex:1;position:relative}
-.input-area textarea{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);resize:none;max-height:120px;font-size:14px;outline:none;font-family:inherit;transition:.25s;line-height:1.5;}
-.input-area textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,92,231,.15);}
-.send-btn{padding:0 18px;height:46px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:var(--primary-text);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;transition:.25s;box-shadow:0 4px 14px rgba(108,92,231,.35);}
-.send-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 6px 18px rgba(108,92,231,.5)}
-.send-btn:active{transform:scale(.96)}
-.welcome{text-align:center;padding:25px 15px;color:var(--text-soft);display:flex;flex-direction:column;align-items:center;gap:8px;}
-.welcome-icon{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;margin-bottom:6px;box-shadow:0 8px 25px rgba(108,92,231,.35);animation:pulse 2.5s infinite;}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.welcome-icon svg{width:30px;height:30px;stroke:var(--primary-text);fill:none;stroke-width:1.8}
-.welcome h3{color:var(--text);font-size:17px;font-weight:800}
-.welcome p{font-size:13px;line-height:1.8;max-width:380px}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(60px);background:#27ae60;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;box-shadow:0 6px 20px rgba(39,174,96,.4);opacity:0;transition:.35s;pointer-events:none;z-index:999;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.save-indicator{position:fixed;bottom:15px;left:15px;background:var(--bg2);color:var(--text-soft);padding:5px 10px;border-radius:15px;font-size:10px;border:1px solid var(--border);opacity:0;transition:.3s;display:flex;align-items:center;gap:4px;z-index:999;}
-.save-indicator.show{opacity:1}
-.save-indicator svg{width:10px;height:10px;stroke:#27ae60;fill:none;stroke-width:2.5}
-.preview-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:1000;padding:15px;}
-.preview-modal.show{display:flex;align-items:center;justify-content:center}
-.preview-container{width:100%;max-width:1100px;height:88vh;background:var(--bg2);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.5);}
-.preview-header{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
-.preview-title{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--text);font-size:14px;}
-.preview-title-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;}
-.preview-title-icon svg{width:16px;height:16px;stroke:var(--primary-text);fill:none;stroke-width:2}
-.preview-actions{display:flex;gap:6px;align-items:center}
-.preview-toggle{display:flex;background:var(--bg);border-radius:8px;padding:2px;border:1px solid var(--border);}
-.preview-toggle button{padding:6px 12px;border:none;background:transparent;color:var(--text-soft);cursor:pointer;border-radius:6px;font-size:12px;font-weight:600;transition:.2s;display:flex;align-items:center;gap:4px;}
-.preview-toggle button.active{background:var(--primary);color:var(--primary-text);}
-.preview-toggle button svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2}
-.preview-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;}
-.preview-close:hover{background:#e74c3c;color:#fff;border-color:#e74c3c}
-.preview-close svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5}
-.preview-body{flex:1;position:relative;overflow:hidden;background:var(--bg);}
-.preview-body iframe{width:100%;height:100%;border:none;background:#fff;display:block;}
-.preview-body .code-view{width:100%;height:100%;overflow:auto;padding:16px;background:#0d0d15;color:#7fffb0;font-family:'Consolas','Monaco',monospace;font-size:12.5px;line-height:1.6;direction:ltr;text-align:left;white-space:pre;display:none;}
-.preview-body.show-code iframe{display:none}
-.preview-body.show-code .code-view{display:block}
-.auth-modal { display: none; position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
-.auth-modal.active { display: flex; }
-.auth-modal-content { background: var(--bg2); border-radius: 16px; width: 100%; max-width: 420px; max-height: 95vh; overflow-y: auto; padding: 30px 25px; position: relative; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); animation: slideUp 0.3s ease-out; }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.close-auth { position: absolute; top: 15px; left: 15px; font-size: 1.2rem; cursor: pointer; color: var(--text-soft); background: var(--bg); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
-.close-auth:hover { color: var(--danger); border-color: var(--danger); }
-.auth-form-group { margin-bottom: 18px; position: relative; }
-.auth-form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; color: var(--text); }
-.input-wrapper { position: relative; display: flex; align-items: center; }
-.input-wrapper i.icon-left { position: absolute; right: 15px; color: var(--text-soft); font-size: 1.1rem; }
-.auth-form-group input { width: 100%; padding: 12px 40px 12px 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; font-size: 0.95rem; transition: border-color 0.2s, box-shadow 0.2s; }
-.auth-form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2); }
-.toggle-password { position: absolute; left: 15px; cursor: pointer; color: var(--text-soft); font-size: 1rem; }
-.toggle-password:hover { color: var(--primary); }
+:root{--bg:#131314;--surface:#1e1f20;--surface2:#282a2c;--hover:#333537;--text:#e3e3e3;--muted:#9aa0a6;--blue:#8ab4f8;--accent:#7c3aed;--accent-glow:rgba(124,58,237,.4);--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--gold:#fbbf24;--border:rgba(255,255,255,.08)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Tajawal','Google Sans',Arial,sans-serif}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);display:flex;overflow:hidden;padding-top:env(safe-area-inset-top)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea{font-family:inherit}
+.hidden{display:none!important}
+
+/* ===== Auth System ===== */
+#authScreen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 20% 30%,rgba(124,58,237,.2),transparent 50%),radial-gradient(circle at 80% 70%,rgba(59,130,246,.15),transparent 50%),#0a0a0f;padding:20px;overflow-y:auto}
+.login-box{background:rgba(30,31,32,.85);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:24px;padding:36px 28px;width:100%;max-width:420px;box-shadow:0 25px 60px -12px rgba(0,0,0,.6);animation:slideUp .5s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{width:70px;height:70px;margin:0 auto 20px;border-radius:20px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#4285f4,#9b72cb,#d96570);font-size:32px;box-shadow:0 10px 30px -5px var(--accent-glow)}
+.login-box h2{text-align:center;font-size:26px;font-weight:900;margin-bottom:6px;background:linear-gradient(90deg,#4285f4,#9b72cb,#d96570);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.login-box .sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:24px}
+.field{margin-bottom:14px;position:relative}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:700}
+.field input{width:100%;padding:12px 44px 12px 14px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;outline:none;transition:all .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.field .icon{position:absolute;right:14px;top:38px;color:var(--muted);font-size:16px}
+.field .toggle-pass{position:absolute;left:14px;top:38px;color:var(--muted);cursor:pointer;font-size:14px}
+.btn{width:100%;padding:13px;border-radius:12px;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .25s;margin-top:8px}
+.btn-primary{background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff;box-shadow:0 8px 20px -5px rgba(66,133,244,.5)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-success{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.btn-success:hover{transform:translateY(-2px)}
+.login-tabs{display:flex;gap:6px;margin-bottom:20px;background:rgba(0,0,0,.3);padding:5px;border-radius:12px}
+.login-tab{flex:1;padding:9px;border-radius:8px;font-size:13px;font-weight:700;color:var(--muted);transition:all .2s}
+.login-tab.active{background:linear-gradient(135deg,#4285f4,#9b72cb);color:#fff}
+.captcha{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.captcha-q{background:rgba(0,0,0,.4);border:1px dashed var(--accent);padding:10px 14px;border-radius:10px;color:#c9a7ff;font-weight:900;white-space:nowrap}
+.captcha input{width:80px;padding:10px;text-align:center;border-radius:10px;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);outline:none}
+.otp-input { text-align: center !important; font-size: 1.8rem !important; letter-spacing: 12px !important; font-weight: 900 !important; padding: 15px !important; direction: ltr !important; }
 .strength-meter { height: 4px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
 .strength-bar { height: 100%; width: 0; transition: width 0.3s, background-color 0.3s; }
 .strength-text { font-size: 0.75rem; margin-top: 5px; display: block; text-align: left; }
-.auth-btn-primary { background-color: var(--primary); color: var(--primary-text); border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 10px; transition: 0.2s; }
-.auth-btn-primary:hover { background-color: var(--primary-light); transform: translateY(-2px); }
-.auth-btn-success { background-color: var(--success); color: #fff; }
-.auth-btn-success:hover { background-color: #059669; }
-.auth-btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; margin-bottom: 10px; transition: 0.2s; }
-.auth-btn-outline:hover { border-color: var(--primary); color: var(--primary); }
-.captcha-box { display: flex; gap: 10px; align-items: center; }
-.captcha-question { background: var(--bg); border: 1px dashed var(--primary); color: var(--primary); padding: 12px 16px; border-radius: 12px; font-weight: 900; font-size: 1.1rem; white-space: nowrap; }
-.otp-input { text-align: center !important; font-size: 1.8rem !important; letter-spacing: 12px !important; font-weight: 900 !important; padding: 15px !important; direction: ltr !important; }
-.info-message { background: rgba(108, 92, 231, 0.1); border: 1px solid rgba(108, 92, 231, 0.3); color: var(--text); padding: 12px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5; }
+.info-message { background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.3); color: var(--text); padding: 12px; border-radius: 12px; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5; text-align: center;}
 .success-check { text-align: center; color: var(--success); font-size: 3rem; margin-bottom: 15px; animation: pop 0.5s ease-out; }
 @keyframes pop { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
-.auth-toggle-text { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--text-soft); }
-.auth-toggle-text a { color: var(--primary); cursor: pointer; font-weight: bold; text-decoration: none; }
-.auth-toggle-text a:hover { text-decoration: underline; }
-.forgot-pass-link { display: block; text-align: left; font-size: 0.85rem; color: var(--primary); cursor: pointer; margin-top: -10px; margin-bottom: 15px; }
-.forgot-pass-link:hover { text-decoration: underline; }
-.hidden { display: none !important; }
+.forgot-link { display: block; text-align: left; font-size: 0.85rem; color: var(--accent); cursor: pointer; margin-top: -10px; margin-bottom: 15px; font-weight: 700;}
+.forgot-link:hover { text-decoration: underline; }
+.toggle-text { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--muted); }
+.toggle-text a { color: var(--accent); cursor: pointer; font-weight: 700; text-decoration: none; }
+.toggle-text a:hover { text-decoration: underline; }
+
+.app-wrapper{width:100%;height:100%;display:flex;overflow:hidden}
+.sb{width:280px;background:var(--surface);display:flex;flex-direction:column;padding:12px;flex-shrink:0;transition:transform .25s;z-index:20;overflow-y:auto}
+.sb-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.icon-btn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--muted);transition:all .2s;position:relative}
+.icon-btn:hover{background:var(--hover);color:var(--text)}
+.icon-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nb{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:20px;background:var(--surface2);font-size:14px;color:var(--muted);align-self:flex-start;margin-bottom:18px;transition:all .2s;width:100%}
+.nb:hover{background:var(--hover);color:var(--text)}
+.sb h4{font-size:13px;font-weight:500;padding:0 12px 8px;color:var(--muted);margin-top:8px}
+.list{flex:1;overflow-y:auto;min-height:60px}
+.ci{display:block;width:100%;padding:10px 14px;border-radius:20px;text-align:start;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);transition:background .2s}
+.ci:hover{background:var(--surface2)}
+.ci.on{background:#2f3a4f;color:var(--blue)}
+
+.user-box{padding:12px;border-top:1px solid var(--surface2);margin-top:12px}
+.user-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.user-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4285f4,#9b72cb);display:grid;place-items:center;font-weight:900;font-size:15px;color:#fff;position:relative}
+.user-avatar .level-badge{position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:#000;font-size:9px;font-weight:900;padding:2px 6px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,.5)}
+.user-info{flex:1;min-width:0}
+.user-info .name{font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-info .plan{font-size:11px;color:var(--muted)}
+.logout-btn{padding:6px;border-radius:8px;color:var(--muted)}
+.logout-btn:hover{background:rgba(239,68,68,.15);color:#ff9999}
+
+.xp-bar-wrap{background:rgba(0,0,0,.3);border-radius:8px;padding:8px 10px}
+.xp-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
+.xp-row strong{color:var(--gold)}
+.xp-bar{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,#fbbf24,#f59e0b);transition:width .5s ease}
+.badges-row{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.badge-icon{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:rgba(124,58,237,.2);color:#c9a7ff;cursor:help;transition:all .2s}
+.badge-icon:hover{transform:scale(1.15);background:rgba(124,58,237,.4)}
+
+main{flex:1;display:flex;flex-direction:column;min-width:0;height:100%}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--surface2)}
+#menu{display:none}
+.brand{font-size:18px;font-weight:700;color:var(--muted)}
+.top-actions{margin-inline-start:auto;display:flex;gap:6px}
+#msgs{flex:1;overflow-y:auto;padding:0 16px}
+.w{max-width:780px;margin:0 auto;padding-bottom:24px}
+
+#hero{padding-top:8vh;text-align:center}
+#hero h1{font-size:44px;font-weight:500;line-height:1.3;background:linear-gradient(90deg,#4285f4,#9b72cb,#d96570);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;width:fit-content;margin:0 auto}
+#hero h2{font-size:44px;font-weight:500;color:#444746;line-height:1.3}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px}
+.card{background:var(--surface);border-radius:16px;padding:16px;height:150px;text-align:start;font-size:14px;display:flex;flex-direction:column;justify-content:space-between;transition:all .2s}
+.card:hover{background:var(--surface2);transform:translateY(-2px)}
+.card span{align-self:flex-end;font-size:22px;background:var(--bg);width:40px;height:40px;border-radius:50%;display:grid;place-items:center}
+
+.m{margin:24px 0;display:flex;gap:14px}
+.m.u{justify-content:flex-end}
+.m.u .b{background:var(--surface2);padding:12px 18px;border-radius:22px 22px 6px 22px;max-width:80%;white-space:pre-wrap;font-size:15px}
+.m.a .ic{width:28px;height:28px;flex-shrink:0;font-size:20px;color:#9b72cb;margin-top:2px}
+.m.a .b{flex:1;min-width:0;font-size:15.5px;line-height:1.85;word-break:break-word;position:relative}
+.b pre{background:#0e0e0f;border-radius:12px;padding:14px;overflow-x:auto;margin:10px 0;direction:ltr;text-align:left;font:13px/1.6 Consolas,monospace;white-space:pre;position:relative}
+.b code{background:var(--surface2);padding:2px 7px;border-radius:5px;font:13px Consolas,monospace}
+.b pre code{background:none;padding:0}
+.cw{position:relative}
+.cp,.preview-btn{position:absolute;top:8px;inset-inline-end:8px;background:var(--surface2);border-radius:8px;padding:4px 10px;font-size:11px;z-index:1;display:flex;align-items:center;gap:4px;transition:all .2s}
+.preview-btn{inset-inline-end:80px;background:rgba(124,58,237,.25);color:#c9a7ff}
+.cp:hover,.preview-btn:hover{background:var(--hover)}
+.dots span{display:inline-block;width:8px;height:8px;margin:0 3px;border-radius:50%;background:var(--blue);animation:bl 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+.msg-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.msg-actions button{padding:6px 12px;border-radius:16px;font-size:12px;background:var(--surface2);color:var(--muted);display:inline-flex;align-items:center;gap:5px;transition:all .2s}
+.msg-actions button:hover{background:var(--hover);color:var(--text)}
+.msg-actions button.liked{background:rgba(16,185,129,.2);color:#10b981}
+.msg-actions svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.attachments{max-width:780px;margin:0 auto 8px;display:flex;gap:8px;flex-wrap:wrap}
+.attach-item{position:relative;background:var(--surface2);border-radius:10px;padding:8px 32px 8px 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;max-width:200px}
+.attach-item img{width:32px;height:32px;border-radius:6px;object-fit:cover}
+.attach-item .remove{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:rgba(239,68,68,.3);color:#fff;display:grid;place-items:center;font-size:10px}
+.attach-item .remove:hover{background:var(--danger)}
+
+#cmp{padding:8px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.box{max-width:780px;margin:0 auto;background:var(--surface);border-radius:28px;display:flex;align-items:flex-end;padding:8px 8px 8px 12px;gap:4px;transition:all .2s}
+.box:focus-within{background:var(--surface2)}
+.attach-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--muted);flex-shrink:0}
+.attach-btn:hover{background:var(--hover);color:var(--text)}
+.attach-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+textarea{flex:1;background:none;border:0;outline:0;color:var(--text);font-size:16px;resize:none;max-height:200px;padding:10px 4px}
+textarea::placeholder{color:var(--muted)}
+#send{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--blue);flex-shrink:0}
+#send:hover:not(:disabled){background:var(--hover)}
+#send:disabled{color:#555;cursor:not-allowed}
+#send svg{width:22px;height:22px;fill:currentColor}
+.note{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:15}
+.ov.on{display:block}
+
+.modal-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.on{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:420px;animation:slideUp .3s ease;max-height:90vh;overflow-y:auto}
+.modal-box h3{font-size:20px;font-weight:900;margin-bottom:8px;color:#c9a7ff}
+.modal-box p{color:var(--muted);font-size:14px;margin-bottom:18px;line-height:1.6}
+.modal-box input,.modal-box textarea{width:100%;padding:13px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;outline:none;margin-bottom:14px}
+.modal-box input:focus,.modal-box textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.modal-close{width:100%;padding:11px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--muted);margin-top:8px;font-weight:700}
+
+.preview-modal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:flex;flex-direction:column;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.preview-modal.on{opacity:1;pointer-events:auto}
+.preview-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface);border-radius:14px 14px 0 0}
+.preview-header h3{font-size:15px;color:#c9a7ff}
+.preview-actions{display:flex;gap:8px}
+.preview-actions button{padding:8px 14px;border-radius:10px;background:rgba(124,58,237,.2);color:#c9a7ff;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.preview-actions button:hover{background:rgba(124,58,237,.4)}
+.preview-actions svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.preview-body{flex:1;display:flex;gap:10px;overflow:hidden;background:var(--surface);border-radius:0 0 14px 14px;padding:10px}
+.preview-code{flex:1;background:#0e0e0f;border-radius:10px;overflow:auto;padding:14px}
+.preview-code pre{margin:0;direction:ltr;text-align:left;font:13px/1.6 Consolas,monospace;color:#d4d4d4;white-space:pre;tab-size:2}
+.preview-frame{flex:1;background:#fff;border-radius:10px;overflow:hidden;border:0}
+
+.export-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.export-opt{padding:20px 10px;border-radius:14px;background:var(--surface2);color:var(--text);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;font-weight:700;transition:all .2s;border:1px solid var(--border)}
+.export-opt:hover{background:var(--hover);border-color:var(--accent)}
+.export-opt svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:2}
+
+.achievements-list{display:flex;flex-direction:column;gap:10px}
+.achievement{display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:12px;opacity:.5}
+.achievement.unlocked{opacity:1;background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(245,158,11,.1));border:1px solid rgba(251,191,36,.3)}
+.achievement-icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:rgba(255,255,255,.05);flex-shrink:0}
+.achievement.unlocked .achievement-icon{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
+.achievement-info{flex:1;min-width:0}
+.achievement-info .name{font-weight:700;font-size:14px;margin-bottom:2px}
+.achievement-info .desc{font-size:12px;color:var(--muted)}
+.achievement-xp{font-size:12px;color:var(--gold);font-weight:700;white-space:nowrap}
+
+.toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:700;box-shadow:0 10px 30px rgba(124,58,237,.5);animation:toastIn .4s ease;display:flex;align-items:center;gap:8px;max-width:90vw}
+@keyframes toastIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.toast.hide{animation:toastOut .3s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(-20px)}}
+
+.think-btn.active{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;box-shadow:0 0 15px rgba(124,58,237,.5)}
+.think-btn.active svg{stroke:#fff}
+.think-badge{position:absolute;top:-2px;left:-2px;background:var(--gold);color:#000;font-size:9px;font-weight:900;min-width:16px;height:16px;padding:0 4px;border-radius:8px;display:grid;place-items:center;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.think-btn.active .think-badge{background:#10b981;color:#fff}
+.think-btn.no-quota .think-badge{background:var(--danger);color:#fff}
+.thinking-box{display:flex;align-items:center;gap:10px;padding:8px 0;color:#c9a7ff;font-size:14px;font-weight:700}
+.thinking-box .brain-icon{animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.15)}}
+.mode-badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;margin-bottom:8px}
+
+@media(max-width:768px){
+  .sb{position:fixed;inset:0 auto 0 0;transform:translateX(-100%);padding-top:max(12px,env(safe-area-inset-top))}
+  .sb.on{transform:none}
+  #menu{display:grid}
+  #hero{padding-top:4vh}
+  #hero h1,#hero h2{font-size:30px}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .card{height:120px}
+  .m.u .b{max-width:90%}
+  .preview-body{flex-direction:column}
+  .preview-code,.preview-frame{min-height:200px}
+  .export-options{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<div id="app">
-  <header>
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      </div>
-      <h2>AI <span>Designer</span></h2>
-    </div>
-    <div class="actions">
-      <button class="auth-btn" id="authBtn" onclick="openAuthModal()">
-        <i class="fas fa-user-circle"></i> <span id="authBtnText">دخول</span>
-      </button>
+<div class="toast-container" id="toastContainer"></div>
 
-      <div class="color-picker-wrap" title="تغيير اللون">
-        <svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1.7 0 3-1.3 3-3 0-.8-.3-1.5-.8-2-.5-.5-.7-1.2-.7-2 0-1.7 1.3-3 3-3h2c2.8 0 5-2.2 5-5 0-4.4-5.1-8-11.5-8z"/></svg>
-        <input type="color" class="color-picker" id="colorPicker" value="#6c5ce7">
-      </div>
-      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="الوضع">
-        <svg id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-      </button>
-      <button class="icon-btn" onclick="clearChat()" title="مسح المحادثة">
-        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-      </button>
-    </div>
-  </header>
-
-  <div id="chat"></div>
-
-  <div class="input-area">
-    <div class="input-box">
-      <textarea id="userInput" rows="1" placeholder="اكتب طلبك... مثال: صمم لي صفحة هبوط عصرية"></textarea>
-    </div>
-    <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="إرسال">إرسال</button>
-  </div>
-</div>
-
-<div class="toast" id="toast">✅ تم النسخ</div>
-
-<div class="save-indicator" id="saveIndicator">
-  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-  <span>تم الحفظ</span>
-</div>
-
-<div class="preview-modal" id="previewModal">
-  <div class="preview-container">
-    <div class="preview-header">
-      <div class="preview-title">
-        <div class="preview-title-icon">
-          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </div>
-        <span>معاينة الكود</span>
-      </div>
-      <div class="preview-actions">
-        <div class="preview-toggle">
-          <button class="active" onclick="switchPreview('view', this)">
-            <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <span>معاينة</span>
-          </button>
-          <button onclick="switchPreview('code', this)">
-            <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            <span>الكود</span>
-          </button>
-        </div>
-        <button class="preview-close" onclick="closePreview()">
-          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="preview-body" id="previewBody">
-      <iframe id="previewFrame" sandbox="allow-scripts allow-modals allow-forms"></iframe>
-      <div class="code-view" id="codeView"></div>
-    </div>
-  </div>
-</div>
-
-<!-- =========================================
-     نافذة تسجيل الدخول (Auth Modal)
-     ========================================= -->
-<div class="auth-modal" id="authModal">
-  <div class="auth-modal-content">
-    <span class="close-auth" onclick="closeAuthModal()">&times;</span>
+<!-- Auth Screen -->
+<div id="authScreen">
+  <div class="login-box">
+    <div class="login-logo">✦</div>
+    <h2>DevMind</h2>
+    <p class="sub">مساعد ذكي شامل — سجل الدخول للبدء</p>
     
-    <!-- 1. تسجيل الدخول -->
-    <div id="loginSection">
-      <h2 style="text-align: center; margin-bottom: 25px; color: var(--primary);">
-        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
-      </h2>
-      
-      <div class="auth-form-group">
-        <label>البريد الإلكتروني</label>
-        <div class="input-wrapper">
-          <i class="fas fa-envelope icon-left"></i>
-          <input type="text" id="loginEmail" placeholder="أدخل بريدك الإلكتروني">
-        </div>
-      </div>
-
-      <div class="auth-form-group">
-        <label>كلمة المرور</label>
-        <div class="input-wrapper">
-          <i class="fas fa-lock icon-left"></i>
-          <input type="password" id="loginPass" placeholder="أدخل كلمة المرور">
-          <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPass', this)"></i>
-        </div>
-      </div>
-
-      <a class="forgot-pass-link" onclick="toggleAuthMode('forgot')">نسيت كلمة المرور؟</a>
-
-      <button class="auth-btn-primary" onclick="handleLogin()">
-        <i class="fas fa-arrow-left"></i> دخول
-      </button>
-      
-      <div class="auth-toggle-text">
-        ليس لديك حساب؟ <a onclick="toggleAuthMode('register')">إنشاء حساب جديد</a>
-      </div>
+    <div class="login-tabs">
+      <button class="login-tab active" data-tab="login" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+      <button class="login-tab" data-tab="register" onclick="switchAuthTab('register')">إنشاء حساب</button>
     </div>
 
-    <!-- 2. إنشاء حساب -->
-    <div id="registerSection" class="hidden">
-      <h2 style="text-align: center; margin-bottom: 25px; color: var(--primary);">
-        <i class="fas fa-user-plus"></i> حساب جديد
-      </h2>
-      
-      <div id="registerStep1">
-        <div class="auth-form-group">
-          <label>البريد الإلكتروني (Gmail)</label>
-          <div class="input-wrapper">
-            <i class="fas fa-envelope icon-left"></i>
-            <input type="email" id="regEmail" placeholder="example@gmail.com">
-          </div>
-        </div>
+    <!-- Login Form -->
+    <div id="loginForm">
+      <div class="field">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="loginEmail" placeholder="example@gmail.com">
+        <i class="fas fa-envelope icon"></i>
+      </div>
+      <div class="field">
+        <label>كلمة المرور</label>
+        <input type="password" id="loginPass" placeholder="••••••••">
+        <i class="fas fa-lock icon"></i>
+        <i class="fas fa-eye toggle-pass" onclick="togglePass('loginPass',this)"></i>
+      </div>
+      <a class="forgot-link" onclick="switchAuthTab('forgot')">نسيت كلمة المرور؟</a>
+      <button class="btn btn-primary" onclick="handleLogin()">
+        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+      </button>
+    </div>
 
-        <div class="auth-form-group">
+    <!-- Register Form -->
+    <div id="registerForm" class="hidden">
+      <div id="regStep1">
+        <div class="field">
+          <label>البريد الإلكتروني</label>
+          <input type="email" id="regEmail" placeholder="example@gmail.com">
+          <i class="fas fa-envelope icon"></i>
+        </div>
+        <div class="field">
           <label>كلمة المرور</label>
-          <div class="input-wrapper">
-            <i class="fas fa-lock icon-left"></i>
-            <input type="password" id="regPass" placeholder="أدخل كلمة مرور قوية" oninput="checkPasswordStrength('regPass', 'strengthBar', 'strengthText')">
-            <i class="fas fa-eye toggle-password" onclick="togglePassword('regPass', this)"></i>
-          </div>
+          <input type="password" id="regPass" placeholder="6 أحرف على الأقل" oninput="checkPasswordStrength('regPass', 'strengthBar', 'strengthText')">
+          <i class="fas fa-lock icon"></i>
+          <i class="fas fa-eye toggle-pass" onclick="togglePass('regPass',this)"></i>
           <div class="strength-meter"><div class="strength-bar" id="strengthBar"></div></div>
           <span class="strength-text" id="strengthText"></span>
         </div>
-
-        <div class="auth-form-group">
+        <div class="field">
           <label>تأكيد كلمة المرور</label>
-          <div class="input-wrapper">
-            <i class="fas fa-lock icon-left"></i>
-            <input type="password" id="regPassConfirm" placeholder="أعد كتابة كلمة المرور">
-            <i class="fas fa-eye toggle-password" onclick="togglePassword('regPassConfirm', this)"></i>
-          </div>
+          <input type="password" id="regPassConfirm" placeholder="أعد كتابة كلمة المرور">
+          <i class="fas fa-lock icon"></i>
         </div>
-
-        <div class="auth-form-group">
-          <label><i class="fas fa-robot"></i> التحقق من أنك لست روبوت</label>
-          <div class="captcha-box">
-            <span class="captcha-question" id="captchaQuestion">3 + 5 = ?</span>
-            <input type="number" id="captchaAnswer" placeholder="الجواب" inputmode="numeric" style="text-align: center;">
-          </div>
+        <div class="captcha">
+          <span class="captcha-q" id="captchaQ">3 + 5 = ?</span>
+          <input type="number" id="captchaA" placeholder="الجواب" inputmode="numeric">
         </div>
-
-        <button class="auth-btn-primary" id="sendCodeBtn" onclick="sendVerificationCode()">
+        <button class="btn btn-success" id="sendCodeBtn" onclick="sendVerificationCode()">
           <i class="fas fa-paper-plane"></i> إرسال كود التحقق
         </button>
       </div>
 
-      <div id="registerStep2" class="hidden">
+      <div id="regStep2" class="hidden">
         <div class="success-check"><i class="fas fa-envelope-open-text"></i></div>
-        <div class="info-message" style="background: rgba(245, 158, 11, 0.1); border-color: var(--warning);">
-          <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
-          <strong>لم يصلك الكود؟</strong> اذهب إلى تطبيق Gmail وابحث في مجلد <strong>"الرسائل غير المرغوب فيها" (Spam)</strong>.
-        </div>
         <div class="info-message">
-          <i class="fas fa-info-circle"></i>
-          تم إرسال كود التحقق إلى بريدك: <strong id="sentEmailLabel"></strong><br>
-          الكود صالح لمدة <strong>5 دقائق</strong>.
+          تم إرسال الكود إلى: <strong id="sentEmailLabel" style="color:var(--accent)"></strong><br>
+          <small>(تحقق من مجلد Spam)</small>
         </div>
-
-        <div class="auth-form-group">
-          <label style="text-align: center; display: block; margin-bottom: 10px;">أدخل كود التحقق (OTP)</label>
-          <input type="text" id="otpInput" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+        <div class="field">
+          <input type="text" id="otpInput" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric">
         </div>
-
-        <button class="auth-btn-primary auth-btn-success" onclick="verifyCode()">
-           <i class="fas fa-check-circle"></i> تحقق وإنشاء الحساب
+        <button class="btn btn-success" onclick="verifyCode()">
+          <i class="fas fa-check-circle"></i> تحقق وإنشاء الحساب
         </button>
-        
-        <button class="auth-btn-outline" id="resendBtn" onclick="resendCode()" disabled>
+        <button class="btn" id="resendBtn" onclick="resendCode()" disabled style="background:transparent;border:1px solid var(--border);color:var(--muted);margin-top:10px;">
           <i class="fas fa-redo"></i> إعادة الإرسال (<span id="resendTimer">30</span>ث)
         </button>
-        
-        <button class="auth-btn-outline" onclick="cancelRegistration()" style="border-color: transparent;">
-          <i class="fas fa-arrow-right"></i> رجوع للخلف
+        <button class="btn" onclick="cancelRegistration()" style="background:transparent;color:var(--muted);margin-top:5px;">
+          <i class="fas fa-arrow-right"></i> رجوع
         </button>
-      </div>
-
-      <div class="auth-toggle-text">
-        لديك حساب بالفعل؟ <a onclick="toggleAuthMode('login')">تسجيل الدخول</a>
       </div>
     </div>
 
-    <!-- 3. نسيت كلمة المرور -->
-    <div id="forgotSection" class="hidden">
-      <h2 style="text-align: center; margin-bottom: 25px; color: var(--warning);">
-        <i class="fas fa-key"></i> استعادة الحساب
-      </h2>
-      
+    <!-- Forgot Password Form -->
+    <div id="forgotForm" class="hidden">
       <div id="forgotStep1">
         <div class="info-message">
-          أدخل البريد الإلكتروني المسجل مسبقاً، وسنرسل لك كود تحقق لتغيير كلمة المرور.
+          أدخل بريدك الإلكتروني المسجل، وسنرسل لك كوداً.
         </div>
-        <div class="auth-form-group">
+        <div class="field">
           <label>البريد الإلكتروني</label>
-          <div class="input-wrapper">
-            <i class="fas fa-envelope icon-left"></i>
-            <input type="email" id="forgotEmail" placeholder="example@gmail.com">
-          </div>
+          <input type="email" id="forgotEmail" placeholder="example@gmail.com">
+          <i class="fas fa-envelope icon"></i>
         </div>
-        <button class="auth-btn-primary" id="sendResetBtn" onclick="sendForgotCode()">
+        <button class="btn btn-primary" id="sendResetBtn" onclick="sendForgotCode()">
           <i class="fas fa-paper-plane"></i> إرسال كود الاستعادة
         </button>
       </div>
 
       <div id="forgotStep2" class="hidden">
         <div class="success-check"><i class="fas fa-envelope-open-text"></i></div>
-        <div class="info-message" style="background: rgba(245, 158, 11, 0.1); border-color: var(--warning);">
-          <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
-          <strong>لم يصلك الكود؟</strong> تحقق من مجلد <strong>"الرسائل غير المرغوب فيها" (Spam)</strong> في Gmail.
-        </div>
         <div class="info-message">
-          <i class="fas fa-info-circle"></i>
-          تم إرسال الكود إلى: <strong id="forgotSentLabel"></strong>
+          تم إرسال الكود إلى: <strong id="forgotSentLabel" style="color:var(--accent)"></strong>
         </div>
-        <div class="auth-form-group">
-          <label style="text-align: center; display: block; margin-bottom: 10px;">أدخل كود التحقق (OTP)</label>
+        <div class="field">
           <input type="text" id="forgotOtpInput" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric">
         </div>
-        <button class="auth-btn-primary auth-btn-success" onclick="verifyForgotCode()">
+        <button class="btn btn-success" onclick="verifyForgotCode()">
           <i class="fas fa-check-circle"></i> تحقق من الكود
         </button>
-        <button class="auth-btn-outline" id="forgotResendBtn" onclick="resendForgotCode()" disabled>
+        <button class="btn" id="forgotResendBtn" onclick="resendForgotCode()" disabled style="background:transparent;border:1px solid var(--border);color:var(--muted);margin-top:10px;">
           <i class="fas fa-redo"></i> إعادة الإرسال (<span id="forgotResendTimer">30</span>ث)
         </button>
       </div>
 
       <div id="forgotStep3" class="hidden">
         <div class="success-check"><i class="fas fa-unlock-alt"></i></div>
-        <div class="info-message" style="color: var(--success); border-color: var(--success);">
-          <i class="fas fa-check-double"></i> تم التحقق بنجاح! يرجى إدخال كلمة المرور الجديدة.
+        <div class="info-message" style="border-color:var(--success);color:var(--success);">
+          <i class="fas fa-check-double"></i> تم التحقق! أدخل كلمة المرور الجديدة.
         </div>
-        <div class="auth-form-group">
+        <div class="field">
           <label>كلمة المرور الجديدة</label>
-          <div class="input-wrapper">
-            <i class="fas fa-lock icon-left"></i>
-            <input type="password" id="newPass" placeholder="أدخل كلمة مرور جديدة" oninput="checkPasswordStrength('newPass', 'newStrengthBar', 'newStrengthText')">
-            <i class="fas fa-eye toggle-password" onclick="togglePassword('newPass', this)"></i>
-          </div>
+          <input type="password" id="newPass" placeholder="كلمة مرور جديدة" oninput="checkPasswordStrength('newPass', 'newStrengthBar', 'newStrengthText')">
+          <i class="fas fa-lock icon"></i>
           <div class="strength-meter"><div class="strength-bar" id="newStrengthBar"></div></div>
           <span class="strength-text" id="newStrengthText"></span>
         </div>
-        <div class="auth-form-group">
-          <label>تأكيد كلمة المرور الجديدة</label>
-          <div class="input-wrapper">
-            <i class="fas fa-lock icon-left"></i>
-            <input type="password" id="newPassConfirm" placeholder="أعد كتابة كلمة المرور">
-            <i class="fas fa-eye toggle-password" onclick="togglePassword('newPassConfirm', this)"></i>
-          </div>
+        <div class="field">
+          <label>تأكيد كلمة المرور</label>
+          <input type="password" id="newPassConfirm" placeholder="أعد كتابة كلمة المرور">
+          <i class="fas fa-lock icon"></i>
         </div>
-        <div class="auth-form-group">
-          <label><i class="fas fa-robot"></i> التحقق من أنك لست روبوت</label>
-          <div class="captcha-box">
-            <span class="captcha-question" id="forgotCaptchaQuestion">3 + 5 = ?</span>
-            <input type="number" id="forgotCaptchaAnswer" placeholder="الجواب" inputmode="numeric" style="text-align: center;">
-          </div>
+        <div class="captcha">
+          <span class="captcha-q" id="forgotCaptchaQuestion">3 + 5 = ?</span>
+          <input type="number" id="forgotCaptchaAnswer" placeholder="الجواب" inputmode="numeric">
         </div>
-        <button class="auth-btn-primary auth-btn-success" onclick="updatePassword()">
-          <i class="fas fa-save"></i> حفظ كلمة المرور الجديدة
+        <button class="btn btn-success" onclick="updatePassword()">
+          <i class="fas fa-save"></i> حفظ كلمة المرور
         </button>
       </div>
 
-      <div class="auth-toggle-text">
-        تذكرت كلمة المرور؟ <a onclick="toggleAuthMode('login')">تسجيل الدخول</a>
+      <div class="toggle-text" style="margin-top:15px;">
+        تذكرت كلمة المرور؟ <a onclick="switchAuthTab('login')">تسجيل الدخول</a>
       </div>
     </div>
+  </div>
+</div>
 
+<!-- App -->
+<div class="app-wrapper hidden" id="appScreen">
+  <aside class="sb" id="sb">
+    <div class="sb-top"><span style="font-weight:900;font-size:16px;color:#c9a7ff">✦ DevMind</span><button class="icon-btn" id="close"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <button class="nb" id="new"><i class="fas fa-plus"></i> محادثة جديدة</button>
+    <h4>المحادثات</h4>
+    <div class="list" id="list"></div>
+    <div class="user-box">
+      <div class="user-row">
+        <div class="user-avatar" id="userAvatar">U<span class="level-badge" id="levelBadge">1</span></div>
+        <div class="user-info"><div class="name" id="userName">مستخدم</div><div class="plan" id="userPlan">خطة مجانية</div></div>
+        <button class="logout-btn" onclick="logout()" title="تسجيل الخروج"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+      </div>
+      <div class="xp-bar-wrap"><div class="xp-row"><span>XP <strong id="xpText">0</strong></span><span id="xpNextText">المستوى التالي: 100</span></div><div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div></div>
+      <div class="badges-row" id="badgesRow"></div>
+    </div>
+  </aside>
+
+  <div class="ov" id="ov"></div>
+
+  <main>
+    <div class="bar">
+      <button class="icon-btn" id="menu"><svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+      <span class="brand">مساعد ذكي</span>
+      <div class="top-actions">
+        <button class="icon-btn think-btn" id="thinkBtn" onclick="toggleThinkMode()" title="وضع التفكير والتحليل العميق (5 يومياً)">
+          <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          <span class="think-badge" id="thinkBadge">5</span>
+        </button>
+        <button class="icon-btn" onclick="showAchievements()" title="الإنجازات"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7"/></svg></button>
+        <button class="icon-btn" onclick="showExportModal()" title="تصدير المحادثة"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+      </div>
+    </div>
+    <div id="msgs"><div class="w" id="wrap"></div></div>
+    <div id="cmp">
+      <div class="attachments" id="attachments"></div>
+      <div class="box">
+        <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="رفع ملف"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+        <input type="file" id="fileInput" multiple accept="image/*,.pdf,.txt,.md,.json,.csv,.html,.css,.js,.py,.php,.java,.cpp,.c,.ts,.jsx,.tsx" style="display:none">
+        <textarea id="in" rows="1" placeholder="اسألني أي شيء" dir="auto"></textarea>
+        <button id="send" aria-label="إرسال"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+      </div>
+      <div class="note">قد يخطئ المساعد، تحقق من المعلومات المهمة.</div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="exportModal">
+  <div class="modal-box">
+    <h3>📤 تصدير المحادثة</h3>
+    <p>اختر صيغة التصدير</p>
+    <div class="export-options">
+      <button class="export-opt" onclick="exportChat('txt')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> TXT</button>
+      <button class="export-opt" onclick="exportChat('json')"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> JSON</button>
+      <button class="export-opt" onclick="exportChat('pdf')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> PDF</button>
+    </div>
+    <button class="modal-close" onclick="closeModal('exportModal')">إلغاء</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="achievementsModal">
+  <div class="modal-box">
+    <h3>🏆 الإنجازات والشارات</h3>
+    <p>اجمع النقاط لفتح الإنجازات وترقية مستواك</p>
+    <div class="achievements-list" id="achievementsList"></div>
+    <button class="modal-close" onclick="closeModal('achievementsModal')">إغلاق</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal-box">
+    <h3>🧠 ترقية وضع التفكير</h3>
+    <p>لقد استنفدت 5 استخدامات مجانية اليوم. أدخل الكود لفتح تفكير غير محدود:</p>
+    <input type="text" id="upgradeCode" placeholder="أدخل الكود هنا">
+    <button class="btn btn-success" onclick="applyUpgradeCode()"><i class="fas fa-unlock"></i> تفعيل</button>
+    <button class="modal-close" onclick="closeModal('upgradeModal')">إلغاء</button>
+  </div>
+</div>
+
+<div class="preview-modal" id="previewModal">
+  <div class="preview-header">
+    <h3>🌐 معاينة الكود</h3>
+    <div class="preview-actions">
+      <button onclick="copyPreviewCode()">📋 نسخ</button>
+      <button onclick="openInNewTab()">🔗 فتح</button>
+      <button onclick="closePreview()">✕</button>
+    </div>
+  </div>
+  <div class="preview-body">
+    <div class="preview-code"><pre id="previewCode"></pre></div>
+    <iframe class="preview-frame" id="previewFrame" sandbox="allow-scripts"></iframe>
   </div>
 </div>
 
 <script>
-  // ═══════════════════════════════════════════════════════════
-  // 🔧 إعدادات EmailJS
-  // ═══════════════════════════════════════════════════════════
-  const EMAILJS_CONFIG = {
-    PUBLIC_KEY:  "NQZ3ODR9v_SJQBIFW",       
-    SERVICE_ID:  "service_4a4r63m",       
-    TEMPLATE_ID: "template_pz4r7ta"      
-  };
-
-  if (typeof emailjs !== 'undefined') {
-    emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
-  }
-
-  const STORAGE_USERS = 'lox_users';
-  const STORAGE_CURRENT_USER = 'lox_currentUser';
-
-  const getUsers = () => JSON.parse(localStorage.getItem(STORAGE_USERS)) || [];
-  const saveUsers = (users) => localStorage.setItem(STORAGE_USERS, JSON.stringify(users));
-  let currentUser = JSON.parse(localStorage.getItem(STORAGE_CURRENT_USER)) || null;
-
-  function updateAuthUI() {
-    const authBtn = document.getElementById('authBtn');
-    const authBtnText = document.getElementById('authBtnText');
-    
-    if (currentUser) {
-      authBtnText.textContent = "خروج";
-      authBtn.setAttribute('onclick', 'logout()');
-      authBtn.style.background = 'var(--danger)';
-      authBtn.style.color = '#fff';
-      authBtn.style.borderColor = 'var(--danger)';
-    } else {
-      authBtnText.textContent = "دخول";
-      authBtn.setAttribute('onclick', 'openAuthModal()');
-      authBtn.style.background = 'var(--bg)';
-      authBtn.style.color = 'var(--text)';
-      authBtn.style.borderColor = 'var(--border)';
-    }
-  }
-
-  function openAuthModal() { 
-    if(currentUser) return;
-    toggleAuthMode('login');
-    document.getElementById('authModal').classList.add('active'); 
-  }
-  
-  function closeAuthModal() { 
-    document.getElementById('authModal').classList.remove('active'); 
-  }
-
-  function toggleAuthMode(mode) {
-    document.getElementById('loginSection').classList.add('hidden');
-    document.getElementById('registerSection').classList.add('hidden');
-    document.getElementById('forgotSection').classList.add('hidden');
-
-    if (mode === 'register') {
-      document.getElementById('registerSection').classList.remove('hidden');
-      resetRegisterForm();
-      generateMathCaptcha('captchaQuestion', 'captchaAnswer');
-    } else if (mode === 'forgot') {
-      document.getElementById('forgotSection').classList.remove('hidden');
-      resetForgotForm();
-    } else {
-      document.getElementById('loginSection').classList.remove('hidden');
-    }
-  }
-
-  function togglePassword(inputId, icon) {
-    const input = document.getElementById(inputId);
-    if (input.type === 'password') {
-      input.type = 'text';
-      icon.classList.remove('fa-eye');
-      icon.classList.add('fa-eye-slash');
-    } else {
-      input.type = 'password';
-      icon.classList.remove('fa-eye-slash');
-      icon.classList.add('fa-eye');
-    }
-  }
-
-  function checkPasswordStrength(inputId, barId, textId) {
-    const pass = document.getElementById(inputId).value;
-    const bar = document.getElementById(barId);
-    const text = document.getElementById(textId);
-    
-    let strength = 0;
-    if (pass.length >= 6) strength += 1;
-    if (pass.length >= 10) strength += 1;
-    if (/[A-Z]/.test(pass)) strength += 1;
-    if (/[0-9]/.test(pass)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(pass)) strength += 1;
-
-    const percent = (strength / 5) * 100;
-    bar.style.width = percent + '%';
-    
-    if (pass.length === 0) {
-      text.textContent = '';
-      bar.style.width = '0%';
-    } else if (strength <= 2) {
-      bar.style.backgroundColor = 'var(--danger)';
-      text.textContent = 'ضعيفة جداً';
-      text.style.color = 'var(--danger)';
-    } else if (strength === 3) {
-      bar.style.backgroundColor = 'var(--warning)';
-      text.textContent = 'متوسطة';
-      text.style.color = 'var(--warning)';
-    } else {
-      bar.style.backgroundColor = 'var(--success)';
-      text.textContent = 'قوية جداً';
-      text.style.color = 'var(--success)';
-    }
-  }
-
-  let captchaAnswers = {};
-  function generateMathCaptcha(questionId, inputId) {
-    const a = Math.floor(Math.random() * 9) + 1;
-    const b = Math.floor(Math.random() * 9) + 1;
-    captchaAnswers[inputId] = a + b;
-    document.getElementById(questionId).textContent = `${a} + ${b} = ?`;
-    document.getElementById(inputId).value = '';
-  }
-
-  // ==========================================
-  // قسم التسجيل
-  // ==========================================
-  let pendingRegistration = null, verificationCode = null, codeExpiry = null;
-
-  async function sendEmailWithCode(email, code) {
-    return await emailjs.send(
-      EMAILJS_CONFIG.SERVICE_ID,
-      EMAILJS_CONFIG.TEMPLATE_ID,
-      { to_email: email, verification_code: code, app_name: "lox_2_v" }
-    );
-  }
-
-  async function sendVerificationCode() {
-    const email = document.getElementById('regEmail').value.trim();
-    const pass = document.getElementById('regPass').value;
-    const confirmPass = document.getElementById('regPassConfirm').value;
-    const captchaIn = parseInt(document.getElementById('captchaAnswer').value);
-
-    if (!email || !pass) return alert("يرجى ملء جميع الحقول");
-    if (pass !== confirmPass) return alert("كلمتا المرور غير متطابقتين!");
-    if (pass.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
-    if (isNaN(captchaIn) || captchaIn !== captchaAnswers['captchaAnswer']) {
-      alert("إجابة التحقق غير صحيحة");
-      return generateMathCaptcha('captchaQuestion', 'captchaAnswer');
-    }
-
-    if (getUsers().find(u => u.email === email)) {
-      return alert("هذا البريد الإلكتروني مسجل بالفعل!");
-    }
-
-    verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    codeExpiry = Date.now() + 5 * 60 * 1000;
-    pendingRegistration = { email, pass };
-
-    const btn = document.getElementById('sendCodeBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
-
-    try {
-      await sendEmailWithCode(email, verificationCode);
-      alert(`✅ تم إرسال الكود إلى ${email}\n\n⚠️ إذا لم تجده، تحقق من مجلد "الرسائل غير المرغوب فيها" (Spam) في Gmail.`);
-    } catch (err) {
-      alert(`❌ خطأ: ${err.text || err.message}\n\n⚠️ تم نسخ الكود في الحافظة (Clipboard) لكي تتمكن من إكمال التسجيل.`);
-      // نسخ الكود كخطة بديلة في حال فشل الإرسال
-      navigator.clipboard.writeText(verificationCode).catch(()=>{});
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال كود التحقق';
-    }
-
-    document.getElementById('sentEmailLabel').textContent = email;
-    document.getElementById('registerStep1').classList.add('hidden');
-    document.getElementById('registerStep2').classList.remove('hidden');
-    document.getElementById('otpInput').focus();
-    startResendCooldown(30, 'resendBtn', 'resendTimer');
-  }
-
-  function verifyCode() {
-    const input = document.getElementById('otpInput').value.trim();
-    if (!pendingRegistration) return alert("انتهت الجلسة");
-    if (Date.now() > codeExpiry) return alert("انتهت صلاحية الكود");
-    if (input !== verificationCode) return alert("❌ الكود غير صحيح");
-
-    const users = getUsers();
-    users.push(pendingRegistration);
-    saveUsers(users);
-
-    currentUser = { email: pendingRegistration.email };
-    localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(currentUser));
-
-    alert("🎉 تم إنشاء الحساب بنجاح!");
-    resetRegisterForm();
-    closeAuthModal();
-    updateAuthUI();
-  }
-
-  async function resendCode() {
-    if (!pendingRegistration) return;
-    verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    codeExpiry = Date.now() + 5 * 60 * 1000;
-    try {
-      await sendEmailWithCode(pendingRegistration.email, verificationCode);
-      alert("✅ تم إعادة إرسال الكود");
-    } catch (err) { 
-      alert("❌ خطأ: " + (err.text || err.message)); 
-      navigator.clipboard.writeText(verificationCode).catch(()=>{});
-    }
-    startResendCooldown(30, 'resendBtn', 'resendTimer');
-  }
-
-  function startResendCooldown(seconds, btnId, timerId) {
-    const btn = document.getElementById(btnId);
-    const timerSpan = document.getElementById(timerId);
-    let remaining = seconds;
-    btn.disabled = true;
-    timerSpan.textContent = remaining;
-
-    const interval = setInterval(() => {
-      remaining--;
-      timerSpan.textContent = remaining;
-      if (remaining <= 0) { clearInterval(interval); btn.disabled = false; }
-    }, 1000);
-  }
-
-  function cancelRegistration() {
-    pendingRegistration = null; verificationCode = null; codeExpiry = null;
-    resetRegisterForm();
-  }
-
-  function resetRegisterForm() {
-    document.getElementById('registerStep1').classList.remove('hidden');
-    document.getElementById('registerStep2').classList.add('hidden');
-    document.getElementById('regEmail').value = '';
-    document.getElementById('regPass').value = '';
-    document.getElementById('regPassConfirm').value = '';
-    document.getElementById('captchaAnswer').value = '';
-    document.getElementById('otpInput').value = '';
-    document.getElementById('strengthBar').style.width = '0%';
-    document.getElementById('strengthText').textContent = '';
-    generateMathCaptcha('captchaQuestion', 'captchaAnswer');
-  }
-
-  // ==========================================
-  // قسم الدخول
-  // ==========================================
-  function handleLogin() {
-    const email = document.getElementById('loginEmail').value.trim();
-    const pass = document.getElementById('loginPass').value;
-
-    if (!email || !pass) return alert("يرجى إدخال البريد وكلمة المرور");
-
-    const user = getUsers().find(u => u.email === email && u.pass === pass);
-    if (user) {
-      currentUser = { email: user.email };
-      localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(currentUser));
-      alert("🎉 تم تسجيل الدخول بنجاح!");
-      closeAuthModal();
-      updateAuthUI();
-    } else {
-      alert("❌ البريد أو كلمة المرور غير صحيحة!");
-    }
-  }
-
-  function logout() {
-    currentUser = null;
-    localStorage.removeItem(STORAGE_CURRENT_USER);
-    updateAuthUI();
-    alert("👋 تم تسجيل الخروج.");
-  }
-
-  // ==========================================
-  // قسم نسيت كلمة المرور
-  // ==========================================
-  let forgotEmailValue = null, forgotCode = null, forgotExpiry = null;
-
-  function resetForgotForm() {
-    document.getElementById('forgotStep1').classList.remove('hidden');
-    document.getElementById('forgotStep2').classList.add('hidden');
-    document.getElementById('forgotStep3').classList.add('hidden');
-    document.getElementById('forgotEmail').value = '';
-    document.getElementById('forgotOtpInput').value = '';
-    document.getElementById('newPass').value = '';
-    document.getElementById('newPassConfirm').value = '';
-    document.getElementById('forgotCaptchaAnswer').value = '';
-    document.getElementById('newStrengthBar').style.width = '0%';
-    document.getElementById('newStrengthText').textContent = '';
-    generateMathCaptcha('forgotCaptchaQuestion', 'forgotCaptchaAnswer');
-  }
-
-  async function sendForgotCode() {
-    const email = document.getElementById('forgotEmail').value.trim();
-    if (!email) return alert("يرجى إدخال البريد الإلكتروني");
-
-    if (!getUsers().find(u => u.email === email)) {
-      return alert("❌ هذا البريد غير مسجل لدينا!");
-    }
-
-    forgotCode = Math.floor(100000 + Math.random() * 900000).toString();
-    forgotExpiry = Date.now() + 5 * 60 * 1000;
-    forgotEmailValue = email;
-
-    const btn = document.getElementById('sendResetBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
-
-    try {
-      await sendEmailWithCode(email, forgotCode);
-      alert(`✅ تم إرسال الكود إلى ${email}\n\n⚠️ تحقق من مجلد "الرسائل غير المرغوب فيها" (Spam) إذا لم تجده.`);
-    } catch (err) {
-      alert(`❌ خطأ: ${err.text || err.message}\n\n⚠️ تم نسخ الكود في الحافظة للاستخدام.`);
-      navigator.clipboard.writeText(forgotCode).catch(()=>{});
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال كود الاستعادة';
-    }
-
-    document.getElementById('forgotSentLabel').textContent = email;
-    document.getElementById('forgotStep1').classList.add('hidden');
-    document.getElementById('forgotStep2').classList.remove('hidden');
-    document.getElementById('forgotOtpInput').focus();
-    startResendCooldown(30, 'forgotResendBtn', 'forgotResendTimer');
-  }
-
-  function verifyForgotCode() {
-    const input = document.getElementById('forgotOtpInput').value.trim();
-    if (!forgotEmailValue) return alert("انتهت الجلسة");
-    if (Date.now() > forgotExpiry) return alert("انتهت صلاحية الكود");
-    if (input !== forgotCode) return alert("❌ الكود غير صحيح");
-
-    document.getElementById('forgotStep2').classList.add('hidden');
-    document.getElementById('forgotStep3').classList.remove('hidden');
-    generateMathCaptcha('forgotCaptchaQuestion', 'forgotCaptchaAnswer');
-  }
-
-  async function resendForgotCode() {
-    if (!forgotEmailValue) return;
-    forgotCode = Math.floor(100000 + Math.random() * 900000).toString();
-    forgotExpiry = Date.now() + 5 * 60 * 1000;
-    try {
-      await sendEmailWithCode(forgotEmailValue, forgotCode);
-      alert("✅ تم إعادة إرسال الكود");
-    } catch (err) { 
-      alert("❌ خطأ: " + (err.text || err.message)); 
-      navigator.clipboard.writeText(forgotCode).catch(()=>{});
-    }
-    startResendCooldown(30, 'forgotResendBtn', 'forgotResendTimer');
-  }
-
-  function updatePassword() {
-    const newPass = document.getElementById('newPass').value;
-    const confirmPass = document.getElementById('newPassConfirm').value;
-    const captchaIn = parseInt(document.getElementById('forgotCaptchaAnswer').value);
-
-    if (!newPass || !confirmPass) return alert("يرجى ملء الحقول");
-    if (newPass !== confirmPass) return alert("كلمتا المرور غير متطابقتين!");
-    if (newPass.length < 6) return alert("كلمة المرور قصيرة جداً");
-    if (isNaN(captchaIn) || captchaIn !== captchaAnswers['forgotCaptchaAnswer']) {
-      alert("إجابة التحقق غير صحيحة");
-      return generateMathCaptcha('forgotCaptchaQuestion', 'forgotCaptchaAnswer');
-    }
-
-    let users = getUsers();
-    const userIndex = users.findIndex(u => u.email === forgotEmailValue);
-    if (userIndex === -1) return alert("حدث خطأ، المستخدم غير موجود.");
-
-    users[userIndex].pass = newPass;
-    saveUsers(users);
-
-    alert("🎉 تم تغيير كلمة المرور بنجاح!");
-    forgotEmailValue = null; forgotCode = null; forgotExpiry = null;
-    resetForgotForm();
-    toggleAuthMode('login');
-  }
-
-  // ==========================================
-  // كود الذكاء الاصطناعي والتصميم
-  // ==========================================
-  const API_KEY = "AQ.Ab8RN6IgI3C0xgWkl2v5blhoavrc0xXg7ukFJX3wf5A7AeNWvw";
-  const MODEL   = "gemini-flash-latest";
-  const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent";
-
-  const STORAGE = {
-    CHAT:  'ai_chat_v4',
-    THEME: 'ai_theme_v4',
-    COLOR: 'ai_color_v4',
-    INPUT: 'ai_input_v4'
-  };
-
-  function saveAll(){
-    try{
-      localStorage.setItem(STORAGE.CHAT, document.getElementById('chat').innerHTML);
-      localStorage.setItem(STORAGE.THEME, document.documentElement.getAttribute('data-theme') || 'light');
-      localStorage.setItem(STORAGE.COLOR, getComputedStyle(document.documentElement).getPropertyValue('--primary').trim());
-      localStorage.setItem(STORAGE.INPUT, document.getElementById('userInput').value);
-      showSaveIndicator();
-    }catch(e){}
-  }
-
-  function loadAll(){
-    const theme = localStorage.getItem(STORAGE.THEME) || 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-    updateThemeIcon(theme);
-
-    const color = localStorage.getItem(STORAGE.COLOR);
-    if(color && color.startsWith('#')){
-      document.getElementById('colorPicker').value = color;
-      applyPrimaryColor(color);
-    }
-
-    const chat = localStorage.getItem(STORAGE.CHAT);
-    if(chat && chat.trim()){
-      document.getElementById('chat').innerHTML = chat;
-    } else {
-      showWelcome();
-    }
-
-    const input = localStorage.getItem(STORAGE.INPUT);
-    if(input){
-      const ta = document.getElementById('userInput');
-      ta.value = input;
-      ta.style.height = 'auto';
-      ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
-    }
-    
-    updateAuthUI();
-  }
-
-  let saveTimer;
-  function showSaveIndicator(){
-    const el = document.getElementById('saveIndicator');
-    el.classList.add('show');
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(function(){ el.classList.remove('show'); }, 1200);
-  }
-
-  function hexToRgb(hex){
-    const n = parseInt(hex.replace('#',''), 16);
-    return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 };
-  }
-  function getBrightness(hex){
-    const c = hexToRgb(hex);
-    return (c.r*299 + c.g*587 + c.b*114) / 1000;
-  }
-  function isLightColor(hex){ return getBrightness(hex) > 170; }
-  function adjustColor(hex, amount){
-    const c = hexToRgb(hex);
-    const clamp = function(v){ return Math.max(0, Math.min(255, v)); };
-    const r = clamp(c.r+amount), g = clamp(c.g+amount), b = clamp(c.b+amount);
-    return '#' + ((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
-  }
-  function applyPrimaryColor(hex){
-    const root = document.documentElement;
-    root.style.setProperty('--primary', hex);
-    root.style.setProperty('--primary-light', adjustColor(hex, 30));
-    const textColor = isLightColor(hex) ? '#1a1a2e' : '#ffffff';
-    root.style.setProperty('--primary-text', textColor);
-    root.style.setProperty('--user-msg', 'linear-gradient(135deg,' + hex + ',' + adjustColor(hex, 30) + ')');
-  }
-
-  function toggleTheme(){
-    const cur = document.documentElement.getAttribute('data-theme');
-    const next = cur === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    updateThemeIcon(next);
-    saveAll();
-  }
-  function updateThemeIcon(t){
-    const icon = document.getElementById('themeIcon');
-    if(t === 'dark'){
-      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
-    } else {
-      icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
-    }
-  }
-
-  function showToast(msg){
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(function(){ t.classList.remove('show'); }, 1800);
-  }
-
-  function formatText(text){
-    let html = escapeHtml(text);
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    return html;
-  }
-  function escapeHtml(t){
-    return t.replace(/[&<>"']/g, function(m){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
-    });
-  }
-
-  function encodeCode(code){
-    try{ return btoa(unescape(encodeURIComponent(code))); }
-    catch(e){ return ''; }
-  }
-  function decodeCode(pre){
-    const encoded = pre.getAttribute('data-code');
-    if(encoded){
-      try{ return decodeURIComponent(escape(atob(encoded))); }
-      catch(e){}
-    }
-    const codeEl = pre.querySelector('code');
-    return codeEl ? codeEl.textContent : '';
-  }
-
-  function addUserMessage(text){
-    const w = document.querySelector('.welcome');
-    if(w) w.remove();
-
-    const div = document.createElement('div');
-    div.className = 'msg user';
-    div.innerHTML = '<div class="text-content">' + formatText(text) + '</div>';
-    document.getElementById('chat').appendChild(div);
-    scrollBottom();
-    saveAll();
-  }
-
-  function addAIMessageWithTyping(text, callback){
-    const div = document.createElement('div');
-    div.className = 'msg ai';
-    document.getElementById('chat').appendChild(div);
-
-    const hasCode = /```/.test(text);
-    if(hasCode){
-      animateTextThenShowCode(div, text, callback);
-    } else {
-      typeText(div, text, callback);
-    }
-  }
-
-  function typeText(container, text, callback){
-    const textDiv = document.createElement('div');
-    textDiv.className = 'text-content';
-    container.appendChild(textDiv);
-
-    const caret = document.createElement('span');
-    caret.className = 'typing-caret';
-    textDiv.appendChild(caret);
-
-    const tokens = tokenizeText(text);
-    let i = 0;
-    const speed = 12;
-
-    function typeNext(){
-      if(i >= tokens.length){
-        caret.remove();
-        saveAll();
-        if(callback) callback();
-        return;
-      }
-      const token = tokens[i];
-      if(token.type === 'bold'){
-        const strong = document.createElement('strong');
-        strong.textContent = token.content;
-        textDiv.insertBefore(strong, caret);
-      } else {
-        const txt = document.createTextNode(token.content);
-        textDiv.insertBefore(txt, caret);
-      }
-      i++;
-      scrollBottom();
-      setTimeout(typeNext, speed);
-    }
-    typeNext();
-  }
-
-  function tokenizeText(text){
-    const tokens = [];
-    const regex = /\*\*(.+?)\*\*/g;
-    let lastIndex = 0, match;
-    while((match = regex.exec(text)) !== null){
-      const before = text.slice(lastIndex, match.index);
-      for(let j = 0; j < before.length; j++){ tokens.push({ type: 'char', content: before[j] }); }
-      tokens.push({ type: 'bold', content: match[1] });
-      lastIndex = regex.lastIndex;
-    }
-    const rest = text.slice(lastIndex);
-    for(let j = 0; j < rest.length; j++){ tokens.push({ type: 'char', content: rest[j] }); }
-    return tokens;
-  }
-
-  function animateTextThenShowCode(container, text, callback){
-    const parts = [];
-    const regex = /```(\w+)?\n([\s\S]*?)```/g;
-    let lastIndex = 0, match;
-
-    while((match = regex.exec(text)) !== null){
-      const before = text.slice(lastIndex, match.index).trim();
-      if(before) parts.push({ type: 'text', content: before });
-      parts.push({
-        type: 'code',
-        lang: (match[1] || '').toLowerCase(),
-        content: match[2].trim()
-      });
-      lastIndex = regex.lastIndex;
-    }
-    const after = text.slice(lastIndex).trim();
-    if(after) parts.push({ type: 'text', content: after });
-
-    let idx = 0;
-    function nextPart(){
-      if(idx >= parts.length){
-        saveAll();
-        if(callback) callback();
-        return;
-      }
-      const part = parts[idx];
-      idx++;
-
-      if(part.type === 'text'){
-        const textDiv = document.createElement('div');
-        textDiv.className = 'text-content';
-        container.appendChild(textDiv);
-
-        const caret = document.createElement('span');
-        caret.className = 'typing-caret';
-        textDiv.appendChild(caret);
-
-        const tokens = tokenizeText(part.content);
-        let i = 0;
-        function typeChar(){
-          if(i >= tokens.length){
-            caret.remove();
-            setTimeout(nextPart, 200);
-            return;
-          }
-          const token = tokens[i];
-          if(token.type === 'bold'){
-            const strong = document.createElement('strong');
-            strong.textContent = token.content;
-            textDiv.insertBefore(strong, caret);
-          } else {
-            const txt = document.createTextNode(token.content);
-            textDiv.insertBefore(txt, caret);
-          }
-          i++;
-          scrollBottom();
-          setTimeout(typeChar, 10);
-        }
-        typeChar();
-      } else if(part.type === 'code'){
-        const isHtml = part.lang === 'html' || /<!DOCTYPE|<html/i.test(part.content);
-        const encodedCode = encodeCode(part.content);
-
-        const pre = document.createElement('pre');
-        pre.setAttribute('data-code', encodedCode);
-        pre.innerHTML =
-          '<div class="code-actions">' +
-            '<button class="copy-btn" onclick="copyCode(this)">' +
-              '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>' +
-              'نسخ' +
-            '</button>' +
-            (isHtml ? '<button class="copy-btn preview-btn" onclick="openPreviewFromButton(this)">' +
-              '<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
-              'عرض' +
-            '</button>' : '') +
-          '</div>' +
-          '<code>' + escapeHtml(part.content) + '</code>';
-        container.appendChild(pre);
-        scrollBottom();
-        setTimeout(nextPart, 400);
-      }
-    }
-    nextPart();
-  }
-
-  function copyCode(btn){
-    const pre = btn.closest('pre');
-    const code = decodeCode(pre);
-    navigator.clipboard.writeText(code).then(function(){
-      showToast('✅ تم نسخ الكود');
-    }).catch(function(){
-      showToast('⚠️ فشل النسخ');
-    });
-  }
-
-  function scrollBottom(){
-    const c = document.getElementById('chat');
-    c.scrollTop = c.scrollHeight;
-  }
-
-  function clearChat(){
-    if(!confirm('مسح كل المحادثات؟')) return;
-    document.getElementById('chat').innerHTML = '';
-    localStorage.removeItem(STORAGE.CHAT);
-    showWelcome();
-    showToast('🗑️ تم مسح المحادثة');
-  }
-
-    function showWelcome(){
-    const welcome = document.createElement('div');
-    welcome.className = 'welcome';
-    welcome.innerHTML =
-      '<div class="welcome-icon">' +
-        '<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>' +
-      '</div>' +
-      '<h3>مرحباً بك 👋</h3>' +
-      '<p>أنا <strong>ذكاء اصطناعي مصمم من قبل Lox_2_v</strong><br>متخصص في تصميم المواقع وأعطيك الكود كاملاً في ملف HTML واحد</p>' +
-      '<p>أقدم خدمة <strong>مجانية تماماً 100%</strong></p>' +
-      '<p style="font-size:12px;opacity:.7;margin-top:6px">جرّب: صمم لي صفحة تسجيل دخول عصرية</p>';
-    document.getElementById('chat').appendChild(welcome);
-  }
-
-  function openPreviewFromButton(btn){
-    const pre = btn.closest('pre');
-    const code = decodeCode(pre);
-    openPreview(code);
-  }
-
-  function openPreview(code){
-    const modal = document.getElementById('previewModal');
-    const iframe = document.getElementById('previewFrame');
-    const codeView = document.getElementById('codeView');
-
-    iframe.srcdoc = code;
-    codeView.textContent = code;
-
-    document.getElementById('previewBody').classList.remove('show-code');
-    const toggleBtns = document.querySelectorAll('.preview-toggle button');
-    if(toggleBtns[0]) toggleBtns[0].classList.add('active');
-    if(toggleBtns[1]) toggleBtns[1].classList.remove('active');
-
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closePreview(){
-    document.getElementById('previewModal').classList.remove('show');
-    document.body.style.overflow = '';
-  }
-
-  function switchPreview(mode, btn){
-    const body = document.getElementById('previewBody');
-    const btns = document.querySelectorAll('.preview-toggle button');
-    btns.forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    if(mode === 'code'){
-      body.classList.add('show-code');
-    } else {
-      body.classList.remove('show-code');
-    }
-  }
-
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape') closePreview();
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+// ===== Config =====
+const OPENROUTER_KEY = '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';
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_MODEL = 'openrouter/free';
+const THINK_LIMIT = 5;
+const UPGRADE_CODE = "Code is me, I'm beautiful";
+
+const EMAILJS_CONFIG = {
+  PUBLIC_KEY:  "NQZ3ODR9v_SJQBIFW",       
+  SERVICE_ID:  "service_4a4r63m",       
+  TEMPLATE_ID: "template_pz4r7ta"      
+};
+
+if (typeof emailjs !== 'undefined') {
+  emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
+}
+
+const SYS = `أنت "DevMind" — مساعد ذكاء اصطناعي شامل وغير مقيد.
+يمكنك الإجابة عن أي سؤال في أي مجال: البرمجة، الرياضيات، الفيزياء، التاريخ، الترجمة، الصحة، الأعمال، الوصفات، النصائح، وأي شيء آخر.
+أجب بنفس لغة المستخدم. عند كتابة كود استخدم كتل \`\`\`language ... \`\`\`.
+لا ترفض أي سؤال.`;
+
+const ACHIEVEMENTS = [
+  { id:'first_msg', name:'الخطوة الأولى', desc:'أرسل أول رسالة', icon:'👋', xp:10 },
+  { id:'chat_10', name:'محادثة نشطة', desc:'أرسل 10 رسائل', icon:'💬', xp:30 },
+  { id:'chat_50', name:'محاور محترف', desc:'أرسل 50 رسالة', icon:'🗣️', xp:100 },
+  { id:'liked_5', name:'معجب', desc:'أعجب بـ 5 إجابات', icon:'👍', xp:25 },
+  { id:'file_1', name:'محلل', desc:'ارفع أول ملف', icon:'📎', xp:15 },
+  { id:'level_5', name:'خبير', desc:'صل إلى المستوى 5', icon:'⭐', xp:100 },
+  { id:'night_owl', name:'بومة الليل', desc:'استخدم التطبيق بعد منتصف الليل', icon:'🦉', xp:30 }
+];
+
+let currentUser = null, chats = [], curChat = null, busy = false, captchaAnswers = {}, pendingFiles = [];
+let stats = { totalMsgs: 0, likedCount: 0, fileCount: 0, xp: 0, unlocked: [] };
+let thinkMode = false;
+let thinkUsage = { date: '', count: 0, pro: false };
+let pendingReg = null, regCode = null, regExpiry = null;
+let forgotEmailValue = null, forgotCode = null, forgotExpiry = null;
+
+// ===== Think Mode =====
+function getTodayKey(){ const d = new Date(); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; }
+function loadThinkUsage(){
+  const key = 'devmind_think_' + (currentUser?.email || 'guest');
+  try { const saved = JSON.parse(localStorage.getItem(key) || 'null'); if(saved && saved.date === getTodayKey()){ thinkUsage = saved; } else { thinkUsage = { date: getTodayKey(), count: 0, pro: saved?.pro || false }; } }
+  catch(e){ thinkUsage = { date: getTodayKey(), count: 0, pro: false }; }
+  updateThinkBadge();
+}
+function saveThinkUsage(){ const key = 'devmind_think_' + (currentUser?.email || 'guest'); localStorage.setItem(key, JSON.stringify(thinkUsage)); }
+function getRemainingThinks(){ if(thinkUsage.pro) return '∞'; return Math.max(0, THINK_LIMIT - thinkUsage.count); }
+function updateThinkBadge(){
+  const badge = $('#thinkBadge'); if(!badge) return; const remaining = getRemainingThinks(); badge.textContent = remaining;
+  const btn = $('#thinkBtn'); if(remaining === 0 && !thinkUsage.pro) btn.classList.add('no-quota'); else btn.classList.remove('no-quota');
+}
+function toggleThinkMode(){
+  if(!thinkUsage.pro && thinkUsage.count >= THINK_LIMIT){ $('#upgradeModal').classList.add('on'); return; }
+  thinkMode = !thinkMode; const btn = $('#thinkBtn'); btn.classList.toggle('active', thinkMode);
+  toast(thinkMode ? '🧠 وضع التفكير مفعّل — إجابات أعمق' : '⚡ الوضع العادي', thinkMode ? '🧠' : '⚡');
+}
+function consumeThink(){ if(thinkUsage.pro) return true; if(thinkUsage.count >= THINK_LIMIT) return false; thinkUsage.count++; saveThinkUsage(); updateThinkBadge(); return true; }
+function applyUpgradeCode(){
+  const input = $('#upgradeCode').value.trim();
+  if(input.toLowerCase() === UPGRADE_CODE.toLowerCase()){
+    thinkUsage.pro = true; saveThinkUsage(); updateThinkBadge(); closeModal('upgradeModal'); toast('🎉 تم الترقية! تفكير غير محدود', '⭐'); addXP(50, 'ترقية الخطة');
+  } else { alert('❌ الكود غير صحيح'); }
+}
+
+// ===== Users & Auth =====
+function getUsers(){ try{ return JSON.parse(localStorage.getItem('devmind_users') || '{}'); }catch(e){ return {}; } }
+function saveUsers(u){ localStorage.setItem('devmind_users', JSON.stringify(u)); }
+function getSession(){ try{ return JSON.parse(localStorage.getItem('devmind_session') || 'null'); }catch(e){ return null; } }
+function saveSession(u){ localStorage.setItem('devmind_session', JSON.stringify(u)); }
+function clearSession(){ localStorage.removeItem('devmind_session'); }
+
+function getStatsKey(){ return 'devmind_stats_' + (currentUser?.email || 'guest'); }
+function loadStats(){
+  try{ const s = JSON.parse(localStorage.getItem(getStatsKey()) || 'null'); stats = s || { totalMsgs: 0, likedCount: 0, fileCount: 0, xp: 0, unlocked: [] }; }
+  catch(e){ stats = { totalMsgs: 0, likedCount: 0, fileCount: 0, xp: 0, unlocked: [] }; }
+}
+function saveStats(){ localStorage.setItem(getStatsKey(), JSON.stringify(stats)); }
+
+function addXP(amount, reason){ stats.xp += amount; saveStats(); updateXPDisplay(); if(reason) toast(`+${amount} XP — ${reason}`, '⭐'); checkLevelUp(); checkAchievements(); }
+function getLevel(xp){ return Math.floor(xp / 100) + 1; }
+function getXPForNext(xp){ return getLevel(xp) * 100; }
+function updateXPDisplay(){
+  const lvl = getLevel(stats.xp), nextXP = getXPForNext(stats.xp), curXP = (lvl - 1) * 100;
+  const progress = ((stats.xp - curXP) / (nextXP - curXP)) * 100;
+  $('#levelBadge').textContent = lvl; $('#xpText').textContent = stats.xp;
+  $('#xpNextText').textContent = `المستوى التالي: ${nextXP}`;
+  $('#xpFill').style.width = progress + '%'; renderBadges();
+}
+function renderBadges(){
+  const row = $('#badgesRow'); row.innerHTML = ''; const unlocked = ACHIEVEMENTS.filter(a => stats.unlocked.includes(a.id));
+  if(unlocked.length === 0){ row.innerHTML = '<span style="font-size:11px;color:var(--muted)">لا إنجازات بعد</span>'; return; }
+  unlocked.slice(0, 6).forEach(a => { const b = document.createElement('div'); b.className = 'badge-icon'; b.textContent = a.icon; b.title = `${a.name}: ${a.desc}`; row.appendChild(b); });
+  if(unlocked.length > 6){ const more = document.createElement('div'); more.className = 'badge-icon'; more.textContent = '+' + (unlocked.length - 6); more.title = 'إنجازات أخرى'; more.onclick = showAchievements; row.appendChild(more); }
+}
+function checkLevelUp(){ if(getLevel(stats.xp) >= 5 && !stats.unlocked.includes('level_5')) unlockAchievement('level_5'); }
+function checkAchievements(){
+  if(stats.totalMsgs >= 1 && !stats.unlocked.includes('first_msg')) unlockAchievement('first_msg');
+  if(stats.totalMsgs >= 10 && !stats.unlocked.includes('chat_10')) unlockAchievement('chat_10');
+  if(stats.totalMsgs >= 50 && !stats.unlocked.includes('chat_50')) unlockAchievement('chat_50');
+  if(stats.likedCount >= 5 && !stats.unlocked.includes('liked_5')) unlockAchievement('liked_5');
+  if(stats.fileCount >= 1 && !stats.unlocked.includes('file_1')) unlockAchievement('file_1');
+  const hour = new Date().getHours(); if((hour >= 0 && hour < 4) && !stats.unlocked.includes('night_owl')) unlockAchievement('night_owl');
+}
+function unlockAchievement(id){
+  if(stats.unlocked.includes(id)) return; const a = ACHIEVEMENTS.find(x => x.id === id); if(!a) return;
+  stats.unlocked.push(id); stats.xp += a.xp; saveStats(); updateXPDisplay(); toast(`🏆 إنجاز جديد: ${a.name} (+${a.xp} XP)`, '🎉');
+}
+function showAchievements(){
+  const list = $('#achievementsList'); list.innerHTML = '';
+  ACHIEVEMENTS.forEach(a => {
+    const unlocked = stats.unlocked.includes(a.id); const el = document.createElement('div');
+    el.className = 'achievement' + (unlocked ? ' unlocked' : '');
+    el.innerHTML = `<div class="achievement-icon">${unlocked ? a.icon : '🔒'}</div><div class="achievement-info"><div class="name">${a.name}</div><div class="desc">${a.desc}</div></div><div class="achievement-xp">+${a.xp} XP</div>`;
+    list.appendChild(el);
   });
+  $('#achievementsModal').classList.add('on');
+}
+function toast(msg, icon = '✅'){
+  const c = $('#toastContainer'); const el = document.createElement('div'); el.className = 'toast';
+  el.innerHTML = `<span style="font-size:18px">${icon}</span> ${msg}`; c.appendChild(el);
+  setTimeout(() => { el.classList.add('hide'); setTimeout(() => el.remove(), 300); }, 3000);
+}
 
-  async function sendMessage(){
-    if(!currentUser) {
-      showToast('⚠️ يرجى تسجيل الدخول أولاً');
-      openAuthModal();
-      return;
-    }
+function switchAuthTab(tab){
+  $('#loginForm').classList.add('hidden'); $('#registerForm').classList.add('hidden'); $('#forgotForm').classList.add('hidden');
+  $$('.login-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  if(tab === 'login'){ $('#loginForm').classList.remove('hidden'); }
+  else if(tab === 'register'){ $('#registerForm').classList.remove('hidden'); resetRegisterForm(); generateMathCaptcha('captchaQ', 'captchaA'); }
+  else if(tab === 'forgot'){ $('#forgotForm').classList.remove('hidden'); resetForgotForm(); }
+}
+function generateMathCaptcha(qId, aId){
+  const a = Math.floor(Math.random() * 9) + 1, b = Math.floor(Math.random() * 9) + 1;
+  captchaAnswers[aId] = a + b; document.getElementById(qId).textContent = `${a} + ${b} = ?`; document.getElementById(aId).value = '';
+}
+function togglePass(id, icon){
+  const inp = document.getElementById(id);
+  if(inp.type === 'password'){ inp.type = 'text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+  else { inp.type = 'password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+}
+function checkPasswordStrength(inputId, barId, textId){
+  const pass = document.getElementById(inputId).value; const bar = document.getElementById(barId); const text = document.getElementById(textId);
+  let strength = 0;
+  if (pass.length >= 6) strength++; if (pass.length >= 10) strength++; if (/[A-Z]/.test(pass)) strength++; if (/[0-9]/.test(pass)) strength++; if (/[^A-Za-z0-9]/.test(pass)) strength++;
+  bar.style.width = (strength / 5) * 100 + '%';
+  if (pass.length === 0) { text.textContent = ''; bar.style.width = '0%'; }
+  else if (strength <= 2) { bar.style.backgroundColor = 'var(--danger)'; text.textContent = 'ضعيفة'; text.style.color = 'var(--danger)'; }
+  else if (strength === 3) { bar.style.backgroundColor = 'var(--warning)'; text.textContent = 'متوسطة'; text.style.color = 'var(--warning)'; }
+  else { bar.style.backgroundColor = 'var(--success)'; text.textContent = 'قوية'; text.style.color = 'var(--success)'; }
+}
+function startCooldown(seconds, btnId, timerId){
+  const btn = document.getElementById(btnId); const timerSpan = document.getElementById(timerId); let remaining = seconds;
+  btn.disabled = true; timerSpan.textContent = remaining;
+  const interval = setInterval(() => { remaining--; timerSpan.textContent = remaining; if (remaining <= 0) { clearInterval(interval); btn.disabled = false; } }, 1000);
+}
+async function sendEmailWithCode(email, code){
+  return await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, { to_email: email, verification_code: code, app_name: "DevMind" });
+}
 
-    const input = document.getElementById('userInput');
-    const text = input.value.trim();
-    if(!text) return;
-    input.value = '';
-    input.style.height = 'auto';
-    localStorage.removeItem(STORAGE.INPUT);
+function handleLogin(){
+  const email = $('#loginEmail').value.trim().toLowerCase(), pass = $('#loginPass').value;
+  if(!email || !pass) return alert('أدخل البريد وكلمة المرور');
+  const users = getUsers(); if(!users[email]) return alert('❌ البريد غير مسجل'); if(users[email].pass !== pass) return alert('❌ كلمة المرور خاطئة');
+  saveSession({ email, name: users[email].name || email.split('@')[0] }); enterApp();
+}
 
-    addUserMessage(text);
+async function sendVerificationCode(){
+  const email = document.getElementById('regEmail').value.trim(); const pass = document.getElementById('regPass').value;
+  const confirmPass = document.getElementById('regPassConfirm').value; const captchaIn = parseInt(document.getElementById('captchaA').value);
+  if (!email || !pass) return alert("يرجى ملء الحقول");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert("بريد غير صالح");
+  if (pass !== confirmPass) return alert("كلمتا المرور غير متطابقتين!");
+  if (pass.length < 6) return alert("كلمة المرور قصيرة جداً");
+  if (isNaN(captchaIn) || captchaIn !== captchaAnswers['captchaA']) { alert("إجابة الكابتشا خاطئة"); return generateMathCaptcha('captchaQ', 'captchaA'); }
+  if (getUsers()[email]) return alert("البريد مسجل بالفعل!");
+  regCode = Math.floor(100000 + Math.random() * 900000).toString(); regExpiry = Date.now() + 5 * 60 * 1000; pendingReg = { email, pass };
+  const btn = document.getElementById('sendCodeBtn'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+  try { await sendEmailWithCode(email, regCode); alert(`✅ تم إرسال الكود إلى ${email}\n(تحقق من مجلد Spam)`); }
+  catch (err) { alert(`❌ خطأ: ${err.text || err.message}\nتم نسخ الكود في الحافظة.`); navigator.clipboard.writeText(regCode).catch(()=>{}); }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال كود التحقق'; }
+  document.getElementById('sentEmailLabel').textContent = email; document.getElementById('regStep1').classList.add('hidden'); document.getElementById('regStep2').classList.remove('hidden');
+  document.getElementById('otpInput').focus(); startCooldown(30, 'resendBtn', 'resendTimer');
+}
 
-    const thinking = document.createElement('div');
-    thinking.className = 'thinking';
-    thinking.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>جاري التفكير والتصميم...</span>';
-    thinking.id = 'thinkingIndicator';
-    document.getElementById('chat').appendChild(thinking);
-    scrollBottom();
+function verifyCode(){
+  const input = document.getElementById('otpInput').value.trim();
+  if (!pendingReg) return alert("انتهت الجلسة"); if (Date.now() > regExpiry) return alert("انتهت صلاحية الكود"); if (input !== regCode) return alert("❌ الكود غير صحيح");
+  const users = getUsers(); users[pendingReg.email] = { pass: pendingReg.pass, name: pendingReg.email.split('@')[0], createdAt: Date.now() };
+  saveUsers(users); saveSession({ email: pendingReg.email, name: users[pendingReg.email].name });
+  resetRegisterForm(); toast('🎉 تم إنشاء الحساب!', '✅'); enterApp();
+}
 
-    const reply = await callAI(text);
+async function resendCode(){
+  if (!pendingReg) return; regCode = Math.floor(100000 + Math.random() * 900000).toString(); regExpiry = Date.now() + 5 * 60 * 1000;
+  try { await sendEmailWithCode(pendingReg.email, regCode); alert("✅ تم إعادة إرسال الكود"); }
+  catch (err) { alert("❌ خطأ: " + (err.text || err.message)); }
+  startCooldown(30, 'resendBtn', 'resendTimer');
+}
+function cancelRegistration(){ pendingReg = null; regCode = null; regExpiry = null; resetRegisterForm(); }
+function resetRegisterForm(){
+  document.getElementById('regStep1').classList.remove('hidden'); document.getElementById('regStep2').classList.add('hidden');
+  document.getElementById('regEmail').value = ''; document.getElementById('regPass').value = ''; document.getElementById('regPassConfirm').value = '';
+  document.getElementById('captchaA').value = ''; document.getElementById('otpInput').value = '';
+  document.getElementById('strengthBar').style.width = '0%'; document.getElementById('strengthText').textContent = '';
+}
 
-    const th = document.getElementById('thinkingIndicator');
-    if(th) th.remove();
+async function sendForgotCode(){
+  const email = document.getElementById('forgotEmail').value.trim(); if (!email) return alert("أدخل البريد الإلكتروني"); if (!getUsers()[email]) return alert("❌ البريد غير مسجل لدينا!");
+  forgotCode = Math.floor(100000 + Math.random() * 900000).toString(); forgotExpiry = Date.now() + 5 * 60 * 1000; forgotEmailValue = email;
+  const btn = document.getElementById('sendResetBtn'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+  try { await sendEmailWithCode(email, forgotCode); alert(`✅ تم إرسال الكود إلى ${email}`); }
+  catch (err) { alert(`❌ خطأ: ${err.text || err.message}`); navigator.clipboard.writeText(forgotCode).catch(()=>{}); }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال كود الاستعادة'; }
+  document.getElementById('forgotSentLabel').textContent = email; document.getElementById('forgotStep1').classList.add('hidden'); document.getElementById('forgotStep2').classList.remove('hidden');
+  document.getElementById('forgotOtpInput').focus(); startCooldown(30, 'forgotResendBtn', 'forgotResendTimer');
+}
+function verifyForgotCode(){
+  const input = document.getElementById('forgotOtpInput').value.trim();
+  if (!forgotEmailValue) return alert("انتهت الجلسة"); if (Date.now() > forgotExpiry) return alert("انتهت صلاحية الكود"); if (input !== forgotCode) return alert("❌ الكود غير صحيح");
+  document.getElementById('forgotStep2').classList.add('hidden'); document.getElementById('forgotStep3').classList.remove('hidden'); generateMathCaptcha('forgotCaptchaQuestion', 'forgotCaptchaAnswer');
+}
+async function resendForgotCode(){
+  if (!forgotEmailValue) return; forgotCode = Math.floor(100000 + Math.random() * 900000).toString(); forgotExpiry = Date.now() + 5 * 60 * 1000;
+  try { await sendEmailWithCode(forgotEmailValue, forgotCode); alert("✅ تم إعادة إرسال الكود"); }
+  catch (err) { alert("❌ خطأ: " + (err.text || err.message)); }
+  startCooldown(30, 'forgotResendBtn', 'forgotResendTimer');
+}
+function updatePassword(){
+  const newPass = document.getElementById('newPass').value; const confirmPass = document.getElementById('newPassConfirm').value; const captchaIn = parseInt(document.getElementById('forgotCaptchaAnswer').value);
+  if (!newPass || !confirmPass) return alert("يرجى ملء الحقول"); if (newPass !== confirmPass) return alert("كلمتا المرور غير متطابقتين!");
+  if (newPass.length < 6) return alert("كلمة المرور قصيرة جداً"); if (isNaN(captchaIn) || captchaIn !== captchaAnswers['forgotCaptchaAnswer']) { alert("إجابة الكابتشا خاطئة"); return generateMathCaptcha('forgotCaptchaQuestion', 'forgotCaptchaAnswer'); }
+  let users = getUsers(); if (!users[forgotEmailValue]) return alert("حدث خطأ، المستخدم غير موجود.");
+  users[forgotEmailValue].pass = newPass; saveUsers(users);
+  alert("🎉 تم تغيير كلمة المرور بنجاح!"); forgotEmailValue = null; forgotCode = null; forgotExpiry = null; resetForgotForm(); switchAuthTab('login');
+}
+function resetForgotForm(){
+  document.getElementById('forgotStep1').classList.remove('hidden'); document.getElementById('forgotStep2').classList.add('hidden'); document.getElementById('forgotStep3').classList.add('hidden');
+  document.getElementById('forgotEmail').value = ''; document.getElementById('forgotOtpInput').value = ''; document.getElementById('newPass').value = ''; document.getElementById('newPassConfirm').value = '';
+  document.getElementById('forgotCaptchaAnswer').value = ''; document.getElementById('newStrengthBar').style.width = '0%'; document.getElementById('newStrengthText').textContent = '';
+}
 
-    addAIMessageWithTyping(reply);
-  }
+function enterApp(){
+  currentUser = getSession(); if(!currentUser) return;
+  $('#authScreen').classList.add('hidden'); $('#appScreen').classList.remove('hidden');
+  loadUserData(); loadStats(); loadThinkUsage(); loadChats(); renderChat(); side(); updateXPDisplay(); checkAchievements(); setTimeout(() => checkAchievements(), 2000);
+}
+function logout(){
+  if(!confirm('تسجيل الخروج؟')) return;
+  clearSession(); currentUser = null; chats = []; curChat = null; stats = { totalMsgs:0, likedCount:0, fileCount:0, xp:0, unlocked:[] };
+  pendingFiles = []; thinkMode = false; $('#thinkBtn').classList.remove('active');
+  $('#appScreen').classList.add('hidden'); $('#authScreen').classList.remove('hidden'); $('#loginEmail').value = ''; $('#loginPass').value = ''; switchAuthTab('login');
+}
+function loadUserData(){ if(!currentUser) return; $('#userName').textContent = currentUser.name || 'مستخدم'; $('#userAvatar').innerHTML = (currentUser.name || 'U').charAt(0).toUpperCase() + '<span class="level-badge" id="levelBadge">1</span>'; }
+function getChatsKey(){ return 'devmind_chats_' + (currentUser?.email || 'guest'); }
+function loadChats(){ try{ chats = JSON.parse(localStorage.getItem(getChatsKey()) || '[]'); }catch(e){ chats = []; } }
+function saveChats(){ localStorage.setItem(getChatsKey(), JSON.stringify(chats)); }
 
-  async function callAI(userText){
-    const lower = userText.toLowerCase();
-    if(lower.includes('من انت') || lower.includes('من أنت') || lower.includes('who are you') || lower.includes('من تكون')){
-      return "أنا **ذكاء اصطناعي مصمم من قبل Lox_2_v** 🤖\n\nأنا متخصص في تصميم المواقع وأعطيك الكود كاملاً في ملف HTML واحد (HTML + CSS + JS).\n\nأنا أقدم خدمة **مجانية تماماً 100%** ✨\n\nللتواصل مع المطور: **@Lox_2_v** على تليكرام";
-    }
+const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function md(t){
+  let s = esc(t);
+  s = s.replace(/```html\n?([\s\S]*?)```/g, (_, c) => { const escaped = c.replace(/"/g,'&quot;').replace(/\n/g,'&#10;'); return '<div class="cw"><button class="preview-btn" onclick="previewCode(this)" data-code="'+escaped+'">🔍 معاينة</button><button class="cp" onclick="cp(this)">📋 نسخ</button><pre><code>'+c.replace(/\n$/,'')+'</code></pre></div>'; });
+  s = s.replace(/```(\w*)\n?([\s\S]*?)```/g,(_,l,c)=>'<div class="cw"><button class="cp" onclick="cp(this)">📋 نسخ</button><pre><code>'+c.replace(/\n$/,'')+'</code></pre></div>');
+  s = s.replace(/`([^`\n]+)`/g,'<code>$1</code>'); s = s.replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>'); return s.replace(/\n/g,'<br>');
+}
+function bubble(role, text, msgIndex, isThink){
+  const d = document.createElement('div'); d.className = 'm ' + (role==='user'?'u':'a'); const b = document.createElement('div'); b.className = 'b'; b.dir = 'auto';
+  if(role==='user'){ b.textContent = text; if(isThink){ const badge = document.createElement('div'); badge.className = 'mode-badge'; badge.textContent = '🧠 تفكير عميق'; b.prepend(badge); } }
+  else { const ic = document.createElement('div'); ic.className = 'ic'; ic.textContent = '✦'; d.appendChild(ic); b.innerHTML = md(text); if(msgIndex !== undefined) b.appendChild(buildMsgActions(msgIndex)); }
+  d.appendChild(b); $('#wrap').appendChild(d); return b;
+}
+function buildMsgActions(idx){
+  const wrap = document.createElement('div'); wrap.className = 'msg-actions';
+  const likeBtn = document.createElement('button'); likeBtn.innerHTML = '👍 إعجاب'; const c = chats.find(x => x.id === curChat);
+  if(c && c.msgs[idx] && c.msgs[idx].liked) likeBtn.classList.add('liked');
+  likeBtn.onclick = () => { const chat = chats.find(x => x.id === curChat); if(!chat || !chat.msgs[idx]) return; chat.msgs[idx].liked = !chat.msgs[idx].liked; likeBtn.classList.toggle('liked', chat.msgs[idx].liked); saveChats(); if(chat.msgs[idx].liked){ stats.likedCount++; saveStats(); addXP(2); checkAchievements(); } };
+  wrap.appendChild(likeBtn);
+  const speakBtn = document.createElement('button'); speakBtn.innerHTML = '🔊 سماع'; speakBtn.onclick = () => speakText(chats.find(x => x.id === curChat)?.msgs[idx]?.content || '', speakBtn); wrap.appendChild(speakBtn); return wrap;
+}
+function speakText(text, btn){
+  if(!('speechSynthesis' in window)){ alert('متصفحك لا يدعم النطق'); return; }
+  if(speechSynthesis.speaking){ speechSynthesis.cancel(); btn.innerHTML = '🔊 سماع'; return; }
+  const clean = text.replace(/```[\s\S]*?```/g, ' ').replace(/[#*`_]/g, '').trim(); const utter = new SpeechSynthesisUtterance(clean);
+  utter.lang = /[\u0600-\u06FF]/.test(clean) ? 'ar-SA' : 'en-US'; utter.onend = () => btn.innerHTML = '🔊 سماع'; btn.innerHTML = '⏸️ إيقاف'; speechSynthesis.speak(utter);
+}
+const down = () => { const m = $('#msgs'); m.scrollTop = m.scrollHeight; };
+function renderChat(){
+  const w = $('#wrap'); w.innerHTML = ''; const c = chats.find(x => x.id === curChat);
+  if(!c || !c.msgs.length){
+    w.innerHTML = `<div id="hero"><h1>مرحباً</h1><h2>كيف يمكنني مساعدتك اليوم؟</h2><div class="cards"><button class="card" data-q="اشرح لي مفهوم الذكاء الاصطناعي ببساطة">اشرح الذكاء الاصطناعي<span>💡</span></button><button class="card" data-q="اكتب لي كود بايثون لقراءة ملف CSV">كود بايثون<span>💻</span></button><button class="card" data-q="ساعدني في كتابة رسالة بريد رسمية">رسالة رسمية<span>✉️</span></button><button class="card" data-q="اقترح لي خطة لتعلّم لغة جديدة">خطة تعلّم<span>🧭</span></button></div></div>`;
+    w.querySelectorAll('.card').forEach(btn => { btn.onclick = () => { $('#in').value = btn.dataset.q; sendChat(); }; });
+  } else { c.msgs.forEach((m, i) => bubble(m.role, m.content, m.role === 'assistant' ? i : undefined, m.think)); } down();
+}
+function side(){
+  const l = $('#list'); l.innerHTML = '';
+  chats.forEach(c => { const b = document.createElement('button'); b.className = 'ci' + (c.id===curChat?' on':''); b.textContent = c.title; b.dir = 'auto'; b.onclick = () => { curChat = c.id; renderChat(); side(); closeSb(); }; l.appendChild(b); });
+}
+const openSb = () => { $('#sb').classList.add('on'); $('#ov').classList.add('on'); };
+const closeSb = () => { $('#sb').classList.remove('on'); $('#ov').classList.remove('on'); };
 
-    if(!API_KEY || API_KEY.length < 20){
-      return mockAI(userText);
-    }
-
-    try{
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-goog-api-key': API_KEY
-        },
-        body: JSON.stringify({
-          contents: [{
-            role: "user",
-            parts: [{
-              text: "أنت ذكاء اصطناعي مصمم من قبل Lox_2_v، متخصص في تصميم المواقع.\n" +
-  "قواعدك الأساسية:\n" +
-  "1. عندما يطلب المستخدم موقعاً أو صفحة أو واجهة، أعطه كود كامل في ملف HTML واحد يحتوي HTML+CSS+JS معاً.\n" +
-  "2. ضع الكود داخل ```html ... ``` فقط.\n" +
-  "3. استخدم **النص** لتمييز المعلومات المهمة بخط عريض.\n" +
-  "4. عندما يسألك \"من أنت\" قل: \"أنا ذكاء اصطناعي مصمم من قبل Lox_2_v\".\n" +
-  "5. أنت تقدم خدمة مجانية 100% ولا تطلب أي دفع.\n" +
-  "6. تصميماتك عصرية، متجاوبة مع الجوال، وتستخدم ألواناً جميلة.\n" +
-  "7. الكود يجب أن يكون جاهزاً للاستخدام مباشرة.\n" +
-  "8. تحدث بالعربية دائماً.\n\n" +
-  "طلب المستخدم: " + userText
-            }]
-          }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
-        })
-      });
-
-      const data = await res.json();
-      if(data.error){
-        const errMsg = (data.error.message || '').toLowerCase();
-        if(errMsg.includes('high demand') || errMsg.includes('overloaded') || errMsg.includes('capacity')) {
-          return '⚠️ **عذراً، خوادم الذكاء الاصطناعي تواجه ضغطاً عالياً حالياً.**\nهذا الضغط مؤقت، يرجى المحاولة بعد قليل أو الاستفادة من التصميم التجريبي الجاهز أدناه 👇\n\n' + mockAI(userText);
-        }
-        return '⚠️ **خطأ من Gemini:** ' + (data.error.message || 'غير معروف') + '\n\n' + mockAI(userText);
-      }
-      
-      if(data.candidates && data.candidates[0] && data.candidates[0].content){
-        return data.candidates[0].content.parts[0].text;
-      }
-      return '⚠️ **لم يتم استلام رد من Gemini.**\n\n' + mockAI(userText);
-    }catch(e){
-      return '⚠️ **عذراً، خوادم الذكاء الاصطناعي تواجه ضغطاً عالياً حالياً.**\nتحقق من الاتصال بالإنترنت أو حاول مجدداً بعد قليل.\n\n' + mockAI(userText);
-    }
-  }
-
-  function mockAI(text){
-    return 'إليك تصميم جاهز في ملف HTML واحد 👇\n\n' +
-'```html\n' +
-'<!DOCTYPE html>\n' +
-'<html lang="ar" dir="rtl">\n' +
-'<head>\n' +
-'<meta charset="UTF-8">\n' +
-'<title>صفحة عصرية</title>\n' +
-'<style>\n' +
-'  *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}\n' +
-'  body{display:flex;align-items:center;justify-content:center;\n' +
-'       min-height:100vh;background:linear-gradient(135deg,#6c5ce7,#a29bfe)}\n' +
-'  .card{background:#fff;padding:30px;border-radius:20px;text-align:center}\n' +
-'  h1{color:#6c5ce7;margin-bottom:12px}\n' +
-'  button{background:#6c5ce7;color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer}\n' +
-'</style>\n' +
-'</head>\n' +
-'<body>\n' +
-'  <div class="card">\n' +
-'    <h1>مرحباً بك 👋</h1>\n' +
-'    <button onclick="alert(\'تم!\')">اضغط هنا</button>\n' +
-'  </div>\n' +
-'</body>\n' +
-'</html>\n' +
-'```';
-  }
-
-  document.getElementById('colorPicker').addEventListener('input', function(e){
-    applyPrimaryColor(e.target.value);
-    saveAll();
+function handleFiles(files){
+  Array.from(files).forEach(file => {
+    if(file.size > 5 * 1024 * 1024){ toast(`الملف ${file.name} كبير جداً (الحد 5MB)`, '⚠️'); return; }
+    const reader = new FileReader();
+    if(file.type.startsWith('image/')){ reader.onload = e => { pendingFiles.push({ name: file.name, type: 'image', data: e.target.result }); renderAttachments(); }; reader.readAsDataURL(file); }
+    else { reader.onload = e => { pendingFiles.push({ name: file.name, type: 'text', data: e.target.result }); renderAttachments(); }; reader.readAsText(file); }
   });
+}
+function renderAttachments(){
+  const c = $('#attachments'); c.innerHTML = '';
+  pendingFiles.forEach((f, i) => { const el = document.createElement('div'); el.className = 'attach-item'; if(f.type === 'image'){ el.innerHTML = `<img src="${f.data}" alt=""><span>${f.name.slice(0,20)}</span><button class="remove" onclick="removeAttachment(${i})">✕</button>`; } else { el.innerHTML = `<span>📄 ${f.name.slice(0,20)}</span><button class="remove" onclick="removeAttachment(${i})">✕</button>`; } c.appendChild(el); });
+}
+function removeAttachment(i){ pendingFiles.splice(i, 1); renderAttachments(); }
 
-  document.getElementById('userInput').addEventListener('keydown', function(e){
-    if(e.key === 'Enter' && !e.shiftKey){
-      e.preventDefault();
-      sendMessage();
-    }
-  });
+async function sendChat(){
+  const inp = $('#in'), text = inp.value.trim(); if((!text && pendingFiles.length === 0) || busy) return;
+  const useThink = thinkMode; if(useThink && !consumeThink()){ $('#upgradeModal').classList.add('on'); return; }
+  let c = chats.find(x => x.id === curChat); if(!c){ c = { id: Date.now(), title: (text || 'ملف مرفق').slice(0,40), msgs: [] }; chats.unshift(c); curChat = c.id; }
+  let fullContent = text; const attachments = [...pendingFiles]; if(attachments.length > 0) fullContent = text + '\n\n[مرفقات: ' + attachments.map(f => f.name).join(', ') + ']';
+  c.msgs.push({ role:'user', content: fullContent, attachments, think: useThink });
+  stats.totalMsgs++; stats.fileCount += attachments.filter(f => f.type !== 'image').length; saveStats(); addXP(useThink ? 8 : 5, useThink ? 'تحليل عميق' : 'رسالة جديدة');
+  inp.value = ''; inp.style.height = 'auto'; pendingFiles = []; renderAttachments(); renderChat(); side();
+  const out = document.createElement('div'); out.className = 'm a'; out.innerHTML = '<div class="ic">✦</div>'; const b = document.createElement('div'); b.className = 'b'; b.dir = 'auto';
+  if(useThink){ b.innerHTML = '<div class="thinking-box"><span class="brain-icon">🧠</span> جاري التحليل العميق والتفكير...</div>'; } else { b.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>'; }
+  out.appendChild(b); $('#wrap').appendChild(out); down();
+  busy = true; $('#send').disabled = true;
+  try {
+    const messages = []; if(useThink){ messages.push({ role:'system', content: `أنت "DevMind" في وضع التحليل العميق. قبل الإجابة، فكّر خطوة بخطوة: 1. افهم السؤال بعمق. 2. حلّل الجوانب. 3. فكّر في الحلول. 4. اختر الأفضل. 5. قدّم إجابة منظمة. قواعد: - اشرح منطق تفكيرك. - نظّم الإجابة بعناوين. - أضف أمثلة. - لا ترفض أي سؤال. - أجب بنفس لغة المستخدم.` }); } else { messages.push({ role:'system', content: SYS }); }
+    for(const m of c.msgs.slice(-20)){ if(m.role === 'user' && m.attachments && m.attachments.length > 0){ const content = [{ type:'text', text: m.content }]; for(const att of m.attachments){ if(att.type === 'image'){ content.push({ type:'image_url', image_url:{ url: att.data } }); } else { content.push({ type:'text', text: `\n\n--- محتوى الملف ${att.name} ---\n${att.data.slice(0, 3000)}` }); } } messages.push({ role:'user', content }); } else { messages.push({ role: m.role, content: m.content }); } }
+    const res = await fetch(OPENROUTER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + OPENROUTER_KEY, 'HTTP-Referer': location.origin, 'X-Title': 'DevMind' }, body: JSON.stringify({ model: OPENROUTER_MODEL, messages, temperature: useThink ? 0.3 : 0.8 }) });
+    const raw = await res.text(); let data; try { data = JSON.parse(raw); } catch { data = { raw }; } if(!res.ok) throw new Error((data.error && data.error.message) || raw || ('HTTP ' + res.status));
+    let full = ''; if(data.choices && data.choices[0]){ const ch = data.choices[0]; if(ch.message && ch.message.content) full = ch.message.content; else if(ch.delta && ch.delta.content) full = ch.delta.content; else if(ch.text) full = ch.text; } if(!full) full = 'عذراً، لم أستطع توليد رد.';
+    c.msgs.push({ role:'assistant', content:full, think: useThink }); saveChats(); renderChat();
+  } catch(err){ console.error(err); b.innerHTML = md('⚠️ خطأ: ' + err.message); c.msgs.pop(); if(useThink && !thinkUsage.pro){ thinkUsage.count = Math.max(0, thinkUsage.count - 1); saveThinkUsage(); updateThinkBadge(); } }
+  finally { busy = false; $('#send').disabled = false; down(); }
+}
 
-  document.getElementById('userInput').addEventListener('input', function(){
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-    localStorage.setItem(STORAGE.INPUT, this.value);
-  });
+function cp(btn){ const pre = btn.parentElement.querySelector('pre'); if(!pre) return; copyText(pre.innerText, btn); }
+function copyText(t, btn){ const original = btn.innerHTML; const ok = () => { btn.innerHTML = '✅ تم النسخ'; setTimeout(() => { btn.innerHTML = original; }, 1500); }; if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(ok).catch(() => fallbackCopy(t, ok)); } else fallbackCopy(t, ok); }
+function fallbackCopy(t, cb){ const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); cb(); } catch(e){} a.remove(); }
 
-  window.addEventListener('beforeunload', saveAll);
-  window.addEventListener('load', loadAll);
+let currentPreviewCode = '';
+function previewCode(btn){ const code = btn.dataset.code.replace(/&quot;/g,'"').replace(/&#10;/g,'\n').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&'); currentPreviewCode = code; $('#previewCode').textContent = code; $('#previewFrame').srcdoc = code; $('#previewModal').classList.add('on'); }
+function closePreview(){ $('#previewModal').classList.remove('on'); $('#previewFrame').srcdoc = ''; }
+function copyPreviewCode(){ copyText(currentPreviewCode, event.target); }
+function openInNewTab(){ const w = window.open(); w.document.write(currentPreviewCode); w.document.close(); }
 
+function showExportModal(){ const c = chats.find(x => x.id === curChat); if(!c || !c.msgs.length){ toast('لا توجد محادثة للتصدير', '⚠️'); return; } $('#exportModal').classList.add('on'); }
+function exportChat(format){
+  const c = chats.find(x => x.id === curChat); if(!c) return;
+  if(format === 'json'){ downloadFile(JSON.stringify(c, null, 2), `${c.title}.json`, 'application/json'); }
+  else if(format === 'txt'){ let txt = `# ${c.title}\nالتاريخ: ${new Date(c.msgs[0]?.time || Date.now()).toLocaleString('ar')}\n${'='.repeat(50)}\n\n`; c.msgs.forEach(m => { txt += `[${m.role === 'user' ? 'المستخدم' : 'المساعد'}]\n${m.content}\n\n`; }); downloadFile(txt, `${c.title}.txt`, 'text/plain'); }
+  else if(format === 'pdf'){ try { const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20; doc.setFontSize(16); doc.text(c.title, 105, y, { align: 'center' }); y += 10; doc.setFontSize(10); doc.text(`Date: ${new Date().toLocaleString()}`, 105, y, { align: 'center' }); y += 15; doc.setFontSize(11); c.msgs.forEach(m => { const lines = doc.splitTextToSize(`[${m.role === 'user' ? 'USER' : 'AI'}] ${m.content}`, 180); lines.forEach(line => { if(y > 280){ doc.addPage(); y = 20; } doc.text(line, 15, y); y += 6; }); y += 4; }); doc.save(`${c.title}.pdf`); } catch(e){ toast('فشل تصدير PDF — جرب TXT', '⚠️'); return; } }
+  closeModal('exportModal'); toast('✅ تم التصدير', '📤'); addXP(3);
+}
+function downloadFile(content, filename, mime){ const blob = new Blob([content], { type: mime + ';charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
+function closeModal(id){ document.getElementById(id).classList.remove('on'); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const session = getSession(); if(session) enterApp(); else { $('#authScreen').classList.remove('hidden'); $('#appScreen').classList.add('hidden'); }
+  $('#menu').onclick = openSb; $('#close').onclick = closeSb; $('#ov').onclick = closeSb;
+  $('#new').onclick = () => { curChat = null; renderChat(); side(); closeSb(); $('#in').focus(); };
+  $('#send').addEventListener('click', (e) => { e.preventDefault(); sendChat(); });
+  $('#in').addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); } });
+  $('#in').addEventListener('input', e => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px'; });
+  $('#fileInput').addEventListener('change', e => { handleFiles(e.target.files); e.target.value = ''; });
+  document.addEventListener('dragover', e => { e.preventDefault(); });
+  document.addEventListener('drop', e => { e.preventDefault(); if(e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files); });
+  document.querySelectorAll('.modal-overlay').forEach(m => { m.addEventListener('click', e => { if(e.target === m) m.classList.remove('on'); }); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closePreview(); document.querySelectorAll('.modal-overlay.on').forEach(m => m.classList.remove('on')); } });
+  document.addEventListener('paste', e => { const items = e.clipboardData?.items; if(!items) return; for(const item of items){ if(item.type.startsWith('image/')){ const file = item.getAsFile(); if(file) handleFiles([file]); } } });
+});
 </script>
 </body>
 </html>
